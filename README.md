@@ -49,15 +49,6 @@ El objetivo es analizar los fenómenos derivados del confinamiento durante la pa
    git clone https://github.com/tu_usuario/proyecto-911-cdmx.git
    cd proyecto-911-cdmx
    ```
-2. **Instalar dependencias** (si aplica):
-   ```sh
-   pip install -r requirements.txt
-   ```
-3. **Ejecutar análisis**:
-   ```sh
-   python analisis.py
-   ```
-
 ---
 Este proyecto busca aportar información relevante para entender los efectos del confinamiento en las emergencias reportadas al 911 en la CDMX. 📞
 
