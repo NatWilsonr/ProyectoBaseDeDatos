@@ -80,28 +80,26 @@ Para garantizar la correcta estructuración de los datos, es necesario ejecutar 
 
 ### **3.1 Definición de la Tabla**
 
-```sql
 CREATE TABLE llamadas_911 (
-    folio VARCHAR(50),
-    categoria_incidente_c4 VARCHAR(100),
-    incidente_c4 VARCHAR(100),
-    anio_creacion INT,
-    mes_creacion VARCHAR(20),
+    folio TEXT PRIMARY KEY,
+    categoria_incidente_c4 TEXT,
+    incidente_c4 TEXT,
+    anio_creacion SMALLINT,
+    mes_creacion TEXT,
     fecha_creacion DATE,
     hora_creacion TIME,
-    anio_cierre INT,
-    mes_cierre VARCHAR(20),
+    anio_cierre SMALLINT,
+    mes_cierre TEXT,
     fecha_cierre DATE,
     hora_cierre TIME,
-    codigo_cierre VARCHAR(50),
-    clas_con_f_alarma VARCHAR(100),
-    alcaldia_cierre VARCHAR(100),
-    colonia_cierre VARCHAR(150),
-    manzana VARCHAR(50),
+    codigo_cierre TEXT,
+    clas_con_f_alarma TEXT,
+    alcaldia_cierre TEXT,
+    colonia_cierre TEXT,
+    manzana TEXT,
     latitud FLOAT,
     longitud FLOAT
 );
-```
 
 Este script debe ejecutarse en `psql` o cualquier cliente SQL compatible con PostgreSQL.
 
