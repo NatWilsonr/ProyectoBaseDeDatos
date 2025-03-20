@@ -60,3 +60,78 @@ El objetivo es analizar los fenómenos derivados del confinamiento durante la pa
 
 ---
 Este proyecto busca aportar información relevante para entender los efectos del confinamiento en las emergencias reportadas al 911 en la CDMX. 📞
+
+# 📊 Carga Inicial de Datos en PostgreSQL
+## **1. Creación de la Base de Datos**
+
+Para establecer el entorno de trabajo, es necesario crear la base de datos donde se almacenará la información. 
+
+Ejecute el siguiente comando en `psql` para crear la base de datos:
+
+```sql
+CREATE DATABASE llamadas911;
+```
+
+Posteriormente, conéctese a la base de datos creada:
+
+```bash
+bash
+CopiarEditar
+psql -U usuario -d llamadas911
+
+```
+
+---
+
+## **3. Creación del Esquema Inicial**
+
+Para garantizar la correcta estructuración de los datos, es necesario ejecutar el siguiente script SQL, el cual define la tabla `llamadas_911` con sus respectivos atributos y tipos de datos:
+
+### **3.1 Definición de la Tabla**
+
+```sql
+CREATE TABLE llamadas_911 (
+    folio VARCHAR(50),
+    categoria_incidente_c4 VARCHAR(100),
+    incidente_c4 VARCHAR(100),
+    anio_creacion INT,
+    mes_creacion VARCHAR(20),
+    fecha_creacion DATE,
+    hora_creacion TIME,
+    anio_cierre INT,
+    mes_cierre VARCHAR(20),
+    fecha_cierre DATE,
+    hora_cierre TIME,
+    codigo_cierre VARCHAR(50),
+    clas_con_f_alarma VARCHAR(100),
+    alcaldia_cierre VARCHAR(100),
+    colonia_cierre VARCHAR(150),
+    manzana VARCHAR(50),
+    latitud FLOAT,
+    longitud FLOAT
+);
+```
+
+Este script debe ejecutarse en `psql` o cualquier cliente SQL compatible con PostgreSQL.
+
+## **4. Importación de Datos desde un Archivo CSV**
+
+Para cargar los datos en la tabla `llamadas_911`, es necesario importar el archivo CSV. 
+
+### **4.1 Importación utilizando `psql`**
+
+Puede utilizar el siguiente comando en `psql` para importar los datos:
+
+```sql
+\copy llamadas_911 FROM '/ruta/del/archivo/llamadas_911_utf8.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
+```
+
+### **5. Verificación de la Carga de Datos**
+
+Una vez importados los datos, se recomienda ejecutar la siguiente consulta para verificar la correcta inserción de los registros:
+
+```sql
+SELECT * FROM llamadas_911 LIMIT 10;
+```
+
+Si los datos se han cargado correctamente, se visualizarán las primeras diez filas de la tabla.
