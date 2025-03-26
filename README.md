@@ -125,6 +125,38 @@ SELECT * FROM llamadas_911 LIMIT 10;
 
 Si los datos se han cargado correctamente, se visualizarán las primeras diez filas de la tabla.
 
-### **6. Análisis exploratorio
+### **6. Análisis exploratorio**
 
-
+Se contabilizarán frecuencias como llamadas por categoría, por incidente, por alcaldía y colonia para poder agrupar distintas variables de interés de acuerdo a la frecuencia que se presente.
+Frecuencia por categoría:
+```sql
+SELECT COUNT(*) AS frecuencia,
+		categoria_incidente_c4
+FROM llamadas_911
+GROUP BY categoria_incidente_c4
+ORDER BY COUNT(*) DESC;
+```
+Frecuencia por incidente:
+```sql
+SELECT COUNT(*) AS frecuencia,
+		incidente_c4
+FROM llamadas_911
+GROUP BY incidente_c4
+ORDER BY COUNT(*) DESC;
+```
+Frecuencia por alcaldía:
+```sql
+SELECT COUNT(*) AS frecuencia,
+		alcaldia_cierre
+FROM llamadas_911
+GROUP BY alcaldia_cierre
+ORDER BY COUNT(*) DESC;
+```
+Frecuencia por colonia:
+```sql
+SELECT COUNT(*) AS frecuencia,
+		colonia_cierre
+FROM llamadas_911
+GROUP BY colonia_cierre
+ORDER BY COUNT(*) DESC;
+```
