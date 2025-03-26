@@ -124,3 +124,7 @@ SELECT * FROM llamadas_911 LIMIT 10;
 ```
 
 Si los datos se han cargado correctamente, se visualizarán las primeras diez filas de la tabla.
+
+### **6. Análisis exploratorio
+
+
