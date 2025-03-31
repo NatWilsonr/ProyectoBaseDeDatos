@@ -77,10 +77,7 @@ CREATE DATABASE llamadas911;
 Posteriormente, conéctese a la base de datos creada:
 
 ```bash
-bash
-CopiarEditar
 psql -U usuario -d llamadas911
-
 ```
 Acceso a los datos: 
 
@@ -119,6 +116,11 @@ Este script debe ejecutarse en `psql` o cualquier cliente SQL compatible con Pos
 ## **4. Importación de Datos desde un Archivo CSV**
 
 Para cargar los datos en la tabla `llamadas_911`, es necesario importar el archivo CSV. 
+
+Para nuestro proyecto necesitamos las bases de datos del primer y segundo semestre de 2020.
+Puede descargárlos en los siguientes enlaces: 
+- [Descargar datos del primer semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a6958855-dce5-498d-9bba-4d586e08d09e)
+- [Descargar datos del segundo semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a3a53f53-8565-44d3-a11b-73c4befed7b3)
 
 ### **4.1 Importación utilizando `psql`**
 
