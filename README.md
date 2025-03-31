@@ -32,11 +32,22 @@ Este proyecto analiza las llamadas realizadas al 911 en la Ciudad de México des
 - **Temporales:** `fecha_creacion`, `fecha_cierre`, `hora_creacion`, `hora_cierre`
 
 ## Objetivo del Proyecto
-El objetivo es analizar los fenómenos derivados del confinamiento durante la pandemia de COVID-19 en la CDMX, a través del análisis de llamadas al 911 relacionadas con:
-- Violencia (doméstica, agresiones, disturbios, robos, etc.).
-- Intentos de suicidio y crisis emocionales.
-- Maltrato animal y abandono.
-- Enfermedades y fallecimientos en domicilio.
+El objetivo de este proyecto es analizar las llamadas registradas al 911 durante el 
+periodo de mayor incidencia de COVID-19 en la Ciudad de México, con el fin de 
+comprender las principales emergencias y delitos reportados en distintas alcaldías y 
+zonas. Inicialmente, se realizará un mapeo general de los incidentes para identificar 
+patrones y tendencias en la distribución de emergencias, incluyendo tanto delitos 
+visibles como aquellos de impacto socioemocional derivados del confinamiento. 
+
+Posteriormente, el estudio se centrará en un análisis comparativo entre colonias con 
+diferentes condiciones socioeconómicas, explorando cómo se vivió la pandemia en 
+términos de seguridad, tiempos de respuesta y tipos de incidentes reportados. Se 
+evaluará si existen contrastes significativos en la atención recibida y en la percepción 
+de inseguridad, considerando los prejuicios asociados a colonias tradicionalmente 
+catalogadas como peligrosas frente a aquellas consideradas privilegiadas. Este 
+enfoque permitirá comprender las desigualdades en la gestión de emergencias y 
+contribuir a una discusión más informada sobre seguridad y acceso a servicios en la 
+ciudad.
 
 ## Consideraciones Éticas
 1. **Protección de datos personales:** Aunque los datos no incluyen información sensible, la ubicación podría permitir identificaciones indirectas. El C5 protege la identidad mediante un radio de precisión adecuado.
