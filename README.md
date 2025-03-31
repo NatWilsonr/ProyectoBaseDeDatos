@@ -79,9 +79,6 @@ Posteriormente, conéctese a la base de datos creada:
 ```bash
 psql -U usuario -d llamadas911
 ```
-Acceso a los datos: 
-
-[Calendario_2025.pdf](attachment:df6f59f8-46fa-4d67-8127-48253d464ac6:Calendario_2025.pdf)
 ---
 
 ## **3. Creación del Esquema Inicial**
@@ -135,7 +132,8 @@ Posteriormente, utilice el siguiente comando en `psql` para importar los datos d
 - Tome en cuenta que en la dirección del archivo `'/ruta/del/archivo/llamadas_911_utf8.csv'` tendrá que colocar la dirección que corresponda a su dispositivo personal.
 
 ```sql
-\copy llamadas_911(folio, categoria_incidente_c4,incidente_c4,anio_creacion,mes_creacion,fecha_creacion,hora_creacion,anio_cierre,mes_cierre,fecha_cierre,hora_cierre,codigo_cierre,clas_con_f_alarma,alcaldia_cierre,colonia_cierre,manzana,latitud,longitud) FROM '/ruta/del/archivo/llamadas_911_utf8.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
+\copy llamadas_911(folio, categoria_incidente_c4,incidente_c4,anio_creacion,mes_creacion,fecha_creacion,hora_creacion,anio_cierre,mes_cierre,fecha_cierre,hora_cierre,codigo_cierre,clas_con_f_alarma,alcaldia_cierre,colonia_cierre,manzana,latitud,longitud)
+FROM '/ruta/del/archivo/llamadas_911_utf8.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 ```
 
 Considerando que estamos trabajando con dos conjuntos de datos, deberá repetir la instrucción anterior sustituyendo la dirección del segundo semestre de 2020.
