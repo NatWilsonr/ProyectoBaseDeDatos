@@ -207,3 +207,13 @@ FROM llamadas_911
 GROUP BY colonia_cierre
 ORDER BY COUNT(*) DESC;
 ```
+Obtener los máximos y mínimos de cada uno de los atributos es esencial para saber cómo se acota nuestra información. Además, nos ayuda a ver la cantidad relativa de cada uno de los valores de cada tupla. Para obtener los valores mínimos y máximos se realizó la siguiente consulta:
+
+```sql
+SELECT 	MIN(anio_creacion) AS min_anio_creacion,MAX(anio_creacion) AS max_anio_creacion,
+		MIN(fecha_creacion) AS min_fecha_creacion,MAX(fecha_creacion) AS max_fecha_creacion,
+		MIN(hora_creacion) AS min_hora_creacion, MAX(hora_creacion) AS max_hora_creacion,
+		MIN(anio_cierre) AS min_anio_cierre, MAX(anio_cierre) AS max_anio_cierre,
+		MIN(fecha_cierre) AS min_fecha_cierre, MAX(fecha_cierre) AS max_fecha_cierre,
+FROM llamadas_911;
+```
