@@ -136,7 +136,8 @@ Posteriormente, utilice el siguiente comando en `psql` para importar los datos d
 FROM '/ruta/del/archivo/llamadas_911_utf8.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 ```
 
-Considerando que estamos trabajando con dos conjuntos de datos, deberá repetir la instrucción anterior sustituyendo la dirección del segundo semestre de 2020.
+⚠️ Considerando que estamos trabajando con dos conjuntos de datos, deberá repetir la instrucción anterior sustituyendo la dirección del segundo semestre de 2020.
+
 ### **5. Verificación de la Carga de Datos**
 
 Una vez importados los datos, se recomienda ejecutar la siguiente consulta para verificar la correcta inserción de los registros:
