@@ -124,12 +124,21 @@ Puede descargárlos en los siguientes enlaces:
 
 ### **4.1 Importación utilizando `psql`**
 
-Puede utilizar el siguiente comando en `psql` para importar los datos:
+Asegúrese de utilizar este comando antes de cargar los datos: 
 
 ```sql
-\copy llamadas_911 FROM '/ruta/del/archivo/llamadas_911_utf8.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
+SET CLIENT_ENCODING TO 'UTF8';
 ```
 
+Posteriormente, utilice el siguiente comando en `psql` para importar los datos del primer semestre:
+
+- Tome en cuenta que en la dirección del archivo `'/ruta/del/archivo/llamadas_911_utf8.csv'` tendrá que colocar la dirección que corresponda a su dispositivo personal.
+
+```sql
+\copy llamadas_911(folio, categoria_incidente_c4,incidente_c4,anio_creacion,mes_creacion,fecha_creacion,hora_creacion,anio_cierre,mes_cierre,fecha_cierre,hora_cierre,codigo_cierre,clas_con_f_alarma,alcaldia_cierre,colonia_cierre,manzana,latitud,longitud) FROM '/ruta/del/archivo/llamadas_911_utf8.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
+```
+
+Considerando que estamos trabajando con dos conjuntos de datos, deberá repetir la instrucción anterior sustituyendo la dirección del segundo semestre de 2020.
 ### **5. Verificación de la Carga de Datos**
 
 Una vez importados los datos, se recomienda ejecutar la siguiente consulta para verificar la correcta inserción de los registros:
