@@ -137,6 +137,30 @@ SELECT * FROM llamadas_911 LIMIT 10;
 Si los datos se han cargado correctamente, se visualizarán las primeras diez filas de la tabla.
 
 ### **6. Análisis exploratorio**
+A la hora de realizar la exploración de los datos, nos pareció preciso clarificar el 
+significado y la composición que el C5 les da a ciertos atributos. Primeramente, las 
+llamadas son clasificadas por el atributo “clas_con_f_alarma”, lo que las distingue en 6 
+grupos en cuanto a la causa general del reporte. Cada uno de estos tiene sus 
+respectivos motivos, representados por el atributo “categoria_incidente_c4”, lo que 
+nos brinda el tipo de incidente registrado. Finalmente, el atributo “incidente_c4” nos 
+brinda más detalle del percance, de esta forma, la combinación de estas categorías 
+logra identificar un total de 311 tipos de incidentes. 
+
+De acuerdo a los datos de ubicación, las manzanas presentan una clave alfanumérica 
+asignada por el INEGI dentro de su marco geoestadístico. Respectivamente, tanto la 
+longitud como la latitud marcan el centroide de la manzana donde se levantó el 
+reporte. 
+
+Finalmente, el folio es único en cada llamada, y está formado por un código 
+alfanumérico formado por las iniciales del centro que recibió la emergencia, la fecha 
+de creación y un número consecutivo único de ingreso. De igual forma, cabe destacar 
+que el atributo “codigo_cierre” clasifica las llamadas en cuanto a cómo se atendió la 
+emergencia: afirmativo en caso de que una unidad de atención confirmó el suceso, 
+informativo en caso de ser una solicitud de información, negativo en caso de que la 
+unidad de atención llegó al sitio del evento pero nadie confirmó la emergencia, 
+duplicado en caso de hacer referencia a un incidente ya reportado (donde el original se 
+marca como afirmativo, negativo, etc., dependiendo el caso) y falso cuando el 
+incidente reportado es falso en el lugar de los hechos.
 
 Se contabilizarán frecuencias como llamadas por categoría, por incidente, por alcaldía y colonia para poder agrupar distintas variables de interés de acuerdo a la frecuencia que se presente.
 Frecuencia por categoría:
