@@ -2,7 +2,7 @@
 Este proyecto busca aportar información relevante para entender los efectos del confinamiento en las emergencias reportadas al 911 en la CDMX. 📞
 
 ## Descripción General
-Este proyecto analiza las llamadas realizadas al 911 en la Ciudad de México desde el primer semestre de 2019 hasta el primer semestre de 2022. La base de datos permite conocer la ubicación aproximada, motivo, descripción del incidente y la duración de atención a los diferentes llamados.
+Este proyecto analiza las llamadas realizadas al 911 en la Ciudad de México durante el primer y segundo semestre de 2020. La base de datos permite conocer la ubicación aproximada, motivo, descripción del incidente y la duración de atención a los diferentes llamados.
 
 ## Fuente de Datos
 - **Recolector de datos:** Centro de Comando, Control, Cómputo, Comunicaciones y Contacto Ciudadano de la CDMX (C5).
