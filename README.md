@@ -75,9 +75,8 @@ Posteriormente, conéctese a la base de datos creada:
 
 Para garantizar la correcta estructuración de los datos, es necesario ejecutar el siguiente script SQL, el cual define la tabla `llamadas_911` con sus respectivos atributos y tipos de datos:
 
-```sql
 ### **3.1 Definición de la Tabla**
-
+```sql
 CREATE TABLE llamadas_911 (
     folio TEXT PRIMARY KEY,
     categoria_incidente_c4 TEXT,
@@ -103,11 +102,11 @@ CREATE TABLE llamadas_911 (
 
 ## **4. Importación de Datos desde un Archivo CSV**
 
-Para cargar los datos en la tabla `llamadas_911`, es necesario importar 2 archivos CSV. 
-	- Para nuestro proyecto necesitamos las bases de datos del primer y segundo semestre de 2020.
-	Puede descargárlos en los siguientes enlaces: 
-	- [Descargar datos del primer semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a6958855-dce5-498d-9bba-4d586e08d09e)
-	- [Descargar datos del segundo semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a3a53f53-8565-44d3-a11b-73c4befed7b3)
+Para cargar los datos en la tabla `llamadas_911`, es necesario importar 2 archivos CSV.
+
+- Para nuestro proyecto necesitamos descargar las bases de datos del primer y segundo semestre de 2020. Puede descargarlas en los siguientes enlaces:
+    - [Descargar datos del primer semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a6958855-dce5-498d-9bba-4d586e08d09e)
+    - [Descargar datos del segundo semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a3a53f53-8565-44d3-a11b-73c4befed7b3)
 
 ### **4.1 Importación utilizando `psql`**
 
