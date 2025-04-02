@@ -196,6 +196,8 @@ FROM llamadas_911;
 	where manzana = 'NA'
 	group by manzana;
 ```
+- Valores repetidos
+Se puede observar que las columnas mes_creacion, anio_creacion y mes_creacion, mes_cierre son repetitivos para la columna fecha_creacion y fecha_cierre respectivamente. Dado que, a través de los datos de la fecha, se pueden obtener estos valores existe una redundancia en contenido.
 ### 7. Limpieza de datos 
 Para optimizar nuestro análisis, eliminamos las columnas longitud, latitud y manzana, ya que la precisión geoespacial que aportaban no era necesaria para nuestros objetivos. De igual forma, decidimos eliminar las columnas respectivas al mes y año de creación y de cierre, pues es información redundante que podemos obtener con los atributos de fecha de creación y de cierre. Además, identificamos valores nulos en la columna manzana y decidimos eliminarlos para mantener la coherencia en los datos. Por otro lado, detectamos una inconsistencia en los nombres de una delegación, ya que "Cuajimalpa" y "Cuajimalpa de Morelos" aparecían como entradas separadas. Para evitar duplicidades y asegurar la uniformidad en la información, unificamos ambas bajo una única denominación estándar. Estas acciones nos permitieron depurar la base de datos y garantizar una estructura más limpia y confiable para el análisis.
 
