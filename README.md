@@ -205,7 +205,11 @@ Dicho lo anterior, para realizar la limpieza de los datos debe proceder a escrib
 ALTER TABLE llamadas_911  
 DROP COLUMN latitud,  
 DROP COLUMN longitud,  
-DROP COLUMN manzana;
+DROP COLUMN manzana,
+DROP COLUMN anio_creacion,
+DROP COLUMN mes_creacion,
+DROP COLUMN anio_cierre,
+DROP COLUMN mes_cierre;
 
 UPDATE llamadas_911 
 SET alcaldia_cierre = 'CUAJIMALPA' 
