@@ -193,7 +193,7 @@ FROM llamadas_911;
 ### 7. Limpieza de datos 
 Para optimizar nuestro análisis, eliminamos las columnas longitud, latitud y manzana, ya que la precisión geoespacial que aportaban no era necesaria para nuestros objetivos. Además, identificamos valores nulos en la columna manzana y decidimos eliminarlos para mantener la coherencia en los datos. Por otro lado, detectamos una inconsistencia en los nombres de una delegación, ya que "Cuajimalpa" y "Cuajimalpa de Morelos" aparecían como entradas separadas. Para evitar duplicidades y asegurar la uniformidad en la información, unificamos ambas bajo una única denominación estándar. Estas acciones nos permitieron depurar la base de datos y garantizar una estructura más limpia y confiable para el análisis.
 
-Dicho lo anterior, para realizar la limpieza de los datos debe proceder a escribir las siguientes instrucciones en el editor.
+Dicho lo anterior, para realizar la limpieza de los datos debe proceder a escribir las siguientes instrucciones en el editor (TablePlus).
 
 ```sql
 ALTER TABLE llamadas_911  
