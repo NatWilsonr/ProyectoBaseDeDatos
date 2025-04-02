@@ -198,6 +198,15 @@ FROM llamadas_911;
 ```
 - Valores repetidos
 Se puede observar que las columnas mes_creacion, anio_creacion y mes_creacion, mes_cierre son repetitivos para la columna fecha_creacion y fecha_cierre respectivamente. Dado que, a través de los datos de la fecha, se pueden obtener estos valores existe una redundancia en contenido.
+- Valores inconsistentes
+Mediante un análisis de coherencia entre la fecha y la hora de creación y cierre para descartar aquellas tuplas inconsistentes ejecutamos la siguiente consulta en el editor (TablePlus):
+```sql
+	SELECT *
+	From llamadas_911
+	WHERE hora_cierre<hora_creacion AND fecha_cierre<=fecha_creacion;
+```
+Esta consulta nos devolvió una tupla en donde la fecha fue la misma (19 de marzo de 2020), pero la hora de creación fue posterior a la hora de creación. Este error se pudo dar a un mal registro de la hora o fecha por parte de los reportes que se dan de las llamadas del 911.
+
 ### 7. Limpieza de datos 
 Para optimizar nuestro análisis, eliminamos las columnas longitud, latitud y manzana, ya que la precisión geoespacial que aportaban no era necesaria para nuestros objetivos. De igual forma, decidimos eliminar las columnas respectivas al mes y año de creación y de cierre, pues es información redundante que podemos obtener con los atributos de fecha de creación y de cierre. Además, identificamos valores nulos en la columna manzana y decidimos eliminarlos para mantener la coherencia en los datos. Por otro lado, detectamos una inconsistencia en los nombres de una delegación, ya que "Cuajimalpa" y "Cuajimalpa de Morelos" aparecían como entradas separadas. Para evitar duplicidades y asegurar la uniformidad en la información, unificamos ambas bajo una única denominación estándar. Estas acciones nos permitieron depurar la base de datos y garantizar una estructura más limpia y confiable para el análisis.
 
