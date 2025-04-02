@@ -1,4 +1,5 @@
 # Proyecto Final - Análisis de Llamadas al 911 en la CDMX
+Este proyecto busca aportar información relevante para entender los efectos del confinamiento en las emergencias reportadas al 911 en la CDMX. 📞
 
 ## Descripción General
 Este proyecto analiza las llamadas realizadas al 911 en la Ciudad de México desde el primer semestre de 2019 hasta el primer semestre de 2022. La base de datos permite conocer la ubicación aproximada, motivo, descripción del incidente y la duración de atención a los diferentes llamados.
@@ -32,22 +33,12 @@ Este proyecto analiza las llamadas realizadas al 911 en la Ciudad de México des
 - **Temporales:** `fecha_creacion`, `fecha_cierre`, `hora_creacion`, `hora_cierre`
 
 ## Objetivo del Proyecto
-El objetivo de este proyecto es analizar las llamadas registradas al 911 durante el 
-periodo de mayor incidencia de COVID-19 en la Ciudad de México, con el fin de 
-comprender las principales emergencias y delitos reportados en distintas alcaldías y 
-zonas. Inicialmente, se realizará un mapeo general de los incidentes para identificar 
-patrones y tendencias en la distribución de emergencias, incluyendo tanto delitos 
-visibles como aquellos de impacto socioemocional derivados del confinamiento. 
-
-Posteriormente, el estudio se centrará en un análisis comparativo entre colonias con 
+El objetivo de este proyecto es analizar las llamadas registradas al 911 durante el periodo de mayor incidencia de COVID-19 en la Ciudad de México, con el fin de comprender las principales emergencias y delitos reportados en distintas alcaldías y zonas. 
+- Inicialmente, se realizará un mapeo general de los incidentes para identificar patrones y tendencias en la distribución de emergencias, incluyendo tanto delitos  visibles como aquellos de impacto socioemocional derivados del confinamiento. 
+- Posteriormente, el estudio se centrará en un análisis comparativo entre colonias con 
 diferentes condiciones socioeconómicas, explorando cómo se vivió la pandemia en 
-términos de seguridad, tiempos de respuesta y tipos de incidentes reportados. Se 
-evaluará si existen contrastes significativos en la atención recibida y en la percepción 
-de inseguridad, considerando los prejuicios asociados a colonias tradicionalmente 
-catalogadas como peligrosas frente a aquellas consideradas privilegiadas. Este 
-enfoque permitirá comprender las desigualdades en la gestión de emergencias y 
-contribuir a una discusión más informada sobre seguridad y acceso a servicios en la 
-ciudad.
+términos de seguridad, tiempos de respuesta y tipos de incidentes reportados.
+	-Se evaluará si existen contrastes significativos en la atención recibida y en la percepción de inseguridad, considerando los prejuicios asociados a colonias tradicionalmente catalogadas como peligrosas frente a aquellas consideradas privilegiadas. Este enfoque permitirá comprender las desigualdades en la gestión de emergencias y contribuir a una discusión más informada sobre seguridad y acceso a servicios en la ciudad.
 
 ## Consideraciones Éticas
 1. **Protección de datos personales:** Aunque los datos no incluyen información sensible, la ubicación podría permitir identificaciones indirectas. El C5 protege la identidad mediante un radio de precisión adecuado.
@@ -61,7 +52,6 @@ ciudad.
    cd proyecto-911-cdmx
    ```
 ---
-Este proyecto busca aportar información relevante para entender los efectos del confinamiento en las emergencias reportadas al 911 en la CDMX. 📞
 
 # 📊 Carga Inicial de Datos en PostgreSQL
 ## **1. Creación de la Base de Datos**
@@ -76,8 +66,8 @@ CREATE DATABASE llamadas911;
 
 Posteriormente, conéctese a la base de datos creada:
 
-```bash
-psql -U usuario -d llamadas911
+```sql
+\c llamadas911
 ```
 ---
 
@@ -85,6 +75,7 @@ psql -U usuario -d llamadas911
 
 Para garantizar la correcta estructuración de los datos, es necesario ejecutar el siguiente script SQL, el cual define la tabla `llamadas_911` con sus respectivos atributos y tipos de datos:
 
+```sql
 ### **3.1 Definición de la Tabla**
 
 CREATE TABLE llamadas_911 (
@@ -107,17 +98,16 @@ CREATE TABLE llamadas_911 (
     latitud FLOAT,
     longitud FLOAT
 );
-
-Este script debe ejecutarse en `psql` o cualquier cliente SQL compatible con PostgreSQL.
+```
+*Este script debe ejecutarse en `psql` o cualquier cliente SQL compatible con PostgreSQL.
 
 ## **4. Importación de Datos desde un Archivo CSV**
 
-Para cargar los datos en la tabla `llamadas_911`, es necesario importar el archivo CSV. 
-
-Para nuestro proyecto necesitamos las bases de datos del primer y segundo semestre de 2020.
-Puede descargárlos en los siguientes enlaces: 
-- [Descargar datos del primer semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a6958855-dce5-498d-9bba-4d586e08d09e)
-- [Descargar datos del segundo semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a3a53f53-8565-44d3-a11b-73c4befed7b3)
+Para cargar los datos en la tabla `llamadas_911`, es necesario importar 2 archivos CSV. 
+	- Para nuestro proyecto necesitamos las bases de datos del primer y segundo semestre de 2020.
+	Puede descargárlos en los siguientes enlaces: 
+	- [Descargar datos del primer semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a6958855-dce5-498d-9bba-4d586e08d09e)
+	- [Descargar datos del segundo semestre de 2020](https://datos.cdmx.gob.mx/dataset/llamadas-numero-de-atencion-a-emergencias-911/resource/a3a53f53-8565-44d3-a11b-73c4befed7b3)
 
 ### **4.1 Importación utilizando `psql`**
 
@@ -129,14 +119,14 @@ SET CLIENT_ENCODING TO 'UTF8';
 
 Posteriormente, utilice el siguiente comando en `psql` para importar los datos del primer semestre:
 
-- Tome en cuenta que en la dirección del archivo `'/ruta/del/archivo/llamadas_911_utf8.csv'` tendrá que colocar la dirección que corresponda a su dispositivo personal.
+- *Tome en cuenta que en la dirección del archivo `'/ruta/del/archivo/llamadas_911_utf8.csv'` tendrá que colocar la dirección que corresponda a su dispositivo personal.*
 
 ```sql
 \copy llamadas_911(folio, categoria_incidente_c4,incidente_c4,anio_creacion,mes_creacion,fecha_creacion,hora_creacion,anio_cierre,mes_cierre,fecha_cierre,hora_cierre,codigo_cierre,clas_con_f_alarma,alcaldia_cierre,colonia_cierre,manzana,latitud,longitud)
 FROM '/ruta/del/archivo/llamadas_911_utf8.csv' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 ```
 
-⚠️ Considerando que estamos trabajando con dos conjuntos de datos, deberá repetir la instrucción anterior sustituyendo la dirección del segundo semestre de 2020.
+⚠️ Considerando que estamos trabajando con dos conjuntos de datos, deberá repetir la instrucción anterior sustituyendo la dirección por la del archivo CSV del segundo semestre de 2020.
 
 ### **5. Verificación de la Carga de Datos**
 
@@ -149,33 +139,15 @@ SELECT * FROM llamadas_911 LIMIT 10;
 Si los datos se han cargado correctamente, se visualizarán las primeras diez filas de la tabla.
 
 ### **6. Análisis exploratorio**
-A la hora de realizar la exploración de los datos, nos pareció preciso clarificar el 
-significado y la composición que el C5 les da a ciertos atributos. Primeramente, las 
-llamadas son clasificadas por el atributo “clas_con_f_alarma”, lo que las distingue en 6 
-grupos en cuanto a la causa general del reporte. Cada uno de estos tiene sus 
-respectivos motivos, representados por el atributo “categoria_incidente_c4”, lo que 
-nos brinda el tipo de incidente registrado. Finalmente, el atributo “incidente_c4” nos 
-brinda más detalle del percance, de esta forma, la combinación de estas categorías 
-logra identificar un total de 311 tipos de incidentes. 
+A la hora de realizar la exploración de los datos, nos pareció preciso clarificar el significado y la composición que el C5 les da a ciertos atributos. Primeramente, las llamadas son clasificadas por el atributo “clas_con_f_alarma”, lo que las distingue en 6 grupos en cuanto a la causa general del reporte. Cada uno de estos tiene sus respectivos motivos, representados por el atributo “categoria_incidente_c4”, lo que nos brinda el tipo de incidente registrado. Finalmente, el atributo “incidente_c4” nos brinda más detalle del percance, de esta forma, la combinación de estas categorías logra identificar un total de 311 tipos de incidentes. 
 
-De acuerdo a los datos de ubicación, las manzanas presentan una clave alfanumérica 
-asignada por el INEGI dentro de su marco geoestadístico. Respectivamente, tanto la 
-longitud como la latitud marcan el centroide de la manzana donde se levantó el 
-reporte. 
+De acuerdo a los datos de ubicación, las manzanas presentan una clave alfanumérica asignada por el INEGI dentro de su marco geoestadístico. Respectivamente, tanto la longitud como la latitud marcan el centroide de la manzana donde se levantó el reporte. 
 
-Finalmente, el folio es único en cada llamada, y está formado por un código 
-alfanumérico formado por las iniciales del centro que recibió la emergencia, la fecha 
-de creación y un número consecutivo único de ingreso. De igual forma, cabe destacar 
-que el atributo “codigo_cierre” clasifica las llamadas en cuanto a cómo se atendió la 
-emergencia: afirmativo en caso de que una unidad de atención confirmó el suceso, 
-informativo en caso de ser una solicitud de información, negativo en caso de que la 
-unidad de atención llegó al sitio del evento pero nadie confirmó la emergencia, 
-duplicado en caso de hacer referencia a un incidente ya reportado (donde el original se 
-marca como afirmativo, negativo, etc., dependiendo el caso) y falso cuando el 
-incidente reportado es falso en el lugar de los hechos.
+Finalmente, el folio es único en cada llamada, y está formado por un código alfanumérico formado por las iniciales del centro que recibió la emergencia, la fecha de creación y un número consecutivo único de ingreso. De igual forma, cabe destacar que el atributo “codigo_cierre” clasifica las llamadas en cuanto a cómo se atendió la emergencia: afirmativo en caso de que una unidad de atención confirmó el suceso, informativo en caso de ser una solicitud de información, negativo en caso de que la unidad de atención llegó al sitio del evento pero nadie confirmó la emergencia, duplicado en caso de hacer referencia a un incidente ya reportado (donde el original se marca como afirmativo, negativo, etc., dependiendo el caso) y falso cuando el incidente reportado es falso en el lugar de los hechos.
 
 Se contabilizarán frecuencias como llamadas por categoría, por incidente, por alcaldía y colonia para poder agrupar distintas variables de interés de acuerdo a la frecuencia que se presente.
-Frecuencia por categoría:
+
+- Frecuencia por categoría:
 ```sql
 SELECT COUNT(*) AS frecuencia,
 		categoria_incidente_c4
@@ -183,7 +155,7 @@ FROM llamadas_911
 GROUP BY categoria_incidente_c4
 ORDER BY COUNT(*) DESC;
 ```
-Frecuencia por incidente:
+- Frecuencia por incidente:
 ```sql
 SELECT COUNT(*) AS frecuencia,
 		incidente_c4
@@ -191,7 +163,7 @@ FROM llamadas_911
 GROUP BY incidente_c4
 ORDER BY COUNT(*) DESC;
 ```
-Frecuencia por alcaldía:
+- Frecuencia por alcaldía:
 ```sql
 SELECT COUNT(*) AS frecuencia,
 		alcaldia_cierre
@@ -199,7 +171,7 @@ FROM llamadas_911
 GROUP BY alcaldia_cierre
 ORDER BY COUNT(*) DESC;
 ```
-Frecuencia por colonia:
+- Frecuencia por colonia:
 ```sql
 SELECT COUNT(*) AS frecuencia,
 		colonia_cierre
@@ -207,6 +179,7 @@ FROM llamadas_911
 GROUP BY colonia_cierre
 ORDER BY COUNT(*) DESC;
 ```
+###Máximos y mínimos
 Obtener los máximos y mínimos de cada uno de los atributos es esencial para saber cómo se acota nuestra información. Además, nos ayuda a ver la cantidad relativa de cada uno de los valores de cada tupla. Para obtener los valores mínimos y máximos se realizó la siguiente consulta:
 
 ```sql
