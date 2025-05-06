@@ -653,3 +653,14 @@ ORDER BY uc.alcaldia_cierre, total_reportes DESC;
 ### Cantidad de llamadas a través del tiempo
 
 Esta consulta nos permite analizar el volumen de llamadas que se realizaron a travez del tiempo. De esta forma, podemos concluir si hubo mas o menos disturbios reportados en la evolución de la pandemia. Así podremos descartar o asegurar la incidencia de ciertos delitos cuando las personas no salian a las calles.
+
+```sql
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas
+FROM llamadas_911
+WHERE EXTRACT(YEAR FROM fecha_creacion) = 2020
+GROUP BY mes_creacion
+ORDER BY mes_creacion;
+```
+
