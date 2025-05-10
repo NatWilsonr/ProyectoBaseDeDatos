@@ -34,11 +34,10 @@ Este proyecto analiza las llamadas realizadas al 911 en la Ciudad de México dur
 
 ## Objetivo del Proyecto
 El objetivo de este proyecto es analizar las llamadas registradas al 911 durante el periodo de mayor incidencia de COVID-19 en la Ciudad de México, con el fin de comprender las principales emergencias y delitos reportados en distintas alcaldías y zonas. 
-- Inicialmente, se realizará un mapeo general de los incidentes para identificar patrones y tendencias en la distribución de emergencias, incluyendo tanto delitos  visibles como aquellos de impacto socioemocional derivados del confinamiento. 
-- Posteriormente, el estudio se centrará en un análisis comparativo entre colonias con 
-diferentes condiciones socioeconómicas, explorando cómo se vivió la pandemia en 
+- Inicialmente, se realizará un mapeo general de los incidentes para identificar patrones y tendencias en la distribución de emergencias, incluyendo tanto delitos visibles como aquellos de impacto socioemocional derivados del confinamiento. 
+- Posteriormente, el estudio se centrará en un análisis comparativo entre colonias con diferentes condiciones socioeconómicas, explorando cómo se vivió la pandemia en 
 términos de seguridad, tiempos de respuesta y tipos de incidentes reportados.
-	-Se evaluará si existen contrastes significativos en la atención recibida y en la percepción de inseguridad, considerando los prejuicios asociados a colonias tradicionalmente catalogadas como peligrosas frente a aquellas consideradas privilegiadas. Este enfoque permitirá comprender las desigualdades en la gestión de emergencias y contribuir a una discusión más informada sobre seguridad y acceso a servicios en la ciudad.
+- Se evaluará si existen contrastes significativos en la atención recibida y en la percepción de inseguridad, considerando los prejuicios asociados a colonias tradicionalmente catalogadas como peligrosas frente a aquellas consideradas privilegiadas. Este enfoque permitirá comprender las desigualdades en la gestión de emergencias y contribuir a una discusión más informada sobre seguridad y acceso a servicios en la ciudad.
 
 ## Consideraciones Éticas
 1. **Protección de datos personales:** Aunque los datos no incluyen información sensible, la ubicación podría permitir identificaciones indirectas. El C5 protege la identidad mediante un radio de precisión adecuado.
@@ -78,22 +77,22 @@ Para garantizar la correcta estructuración de los datos, es necesario ejecutar 
 ### **3.1 Definición de la Tabla**
 ```sql
 CREATE TABLE llamadas_911 (
-    folio TEXT PRIMARY KEY,
-    categoria_incidente_c4 TEXT,
-    incidente_c4 TEXT,
-    anio_creacion SMALLINT,
-    mes_creacion TEXT,
+    folio VARCHAR(50),
+    categoria_incidente_c4 VARCHAR(100),
+    incidente_c4 VARCHAR(100),
+    anio_creacion INT,
+    mes_creacion VARCHAR(20),
     fecha_creacion DATE,
     hora_creacion TIME,
-    anio_cierre SMALLINT,
-    mes_cierre TEXT,
+    anio_cierre INT,
+    mes_cierre VARCHAR(20),
     fecha_cierre DATE,
     hora_cierre TIME,
-    codigo_cierre TEXT,
-    clas_con_f_alarma TEXT,
-    alcaldia_cierre TEXT,
-    colonia_cierre TEXT,
-    manzana TEXT,
+    codigo_cierre VARCHAR(50),
+    clas_con_f_alarma VARCHAR(100),
+    alcaldia_cierre VARCHAR(100),
+    colonia_cierre VARCHAR(150),
+    manzana VARCHAR(50),
     latitud FLOAT,
     longitud FLOAT
 );
@@ -178,7 +177,7 @@ FROM llamadas_911
 GROUP BY colonia_cierre
 ORDER BY COUNT(*) DESC;
 ```
-- Máximos y mínimos
+- Máximos y mínimos:
 Obtener los máximos y mínimos de cada uno de los atributos es esencial para saber cómo se acota nuestra información. Además, nos ayuda a ver la cantidad relativa de cada uno de los valores de cada tupla. Para obtener los valores mínimos y máximos se realizó la siguiente consulta:
 
 ```sql
@@ -189,6 +188,7 @@ SELECT 	MIN(anio_creacion) AS min_anio_creacion,MAX(anio_creacion) AS max_anio_c
 		MIN(fecha_cierre) AS min_fecha_cierre, MAX(fecha_cierre) AS max_fecha_cierre,
 FROM llamadas_911;
 ```
+
 - Valores nulos
 ```sql
 	SELECT manzana, count(*)
@@ -196,85 +196,115 @@ FROM llamadas_911;
 	where manzana = 'NA'
 	group by manzana;
 ```
-- Valores repetidos
+- Valores repetidos:
 Se puede observar que las columnas mes_creacion, anio_creacion y mes_creacion, mes_cierre son repetitivos para la columna fecha_creacion y fecha_cierre respectivamente. Dado que, a través de los datos de la fecha, se pueden obtener estos valores existe una redundancia en contenido.
-- Valores inconsistentes
-Mediante un análisis de coherencia entre la fecha y la hora de creación y cierre para descartar aquellas tuplas inconsistentes ejecutamos la siguiente consulta en el editor (TablePlus):
+
+- Valores inconsistentes: 
+Mediante un análisis de coherencia entre la fecha y la hora de creación y cierre para descartar aquellas tuplas inconsistentes ejecutamos la siguiente consulta en el editor:
 ```sql
 	SELECT *
 	From llamadas_911
 	WHERE hora_cierre<hora_creacion AND fecha_cierre<=fecha_creacion;
 ```
-Esta consulta nos devolvió una tupla en donde la fecha fue la misma (19 de marzo de 2020), pero la hora de creación fue posterior a la hora de creación. Este error se pudo dar a un mal registro de la hora o fecha por parte de los reportes que se dan de las llamadas del 911.
+Esta consulta nos devolvió varias tuplas en donde la fecha fue la misma, pero la hora de creación fue posterior a la hora de creación. Este error se pudo dar a un mal registro de la hora o fecha por parte de los reportes que se dan de las llamadas del 911.
 
 ### 7. Limpieza de datos 
-Para optimizar nuestro análisis, eliminamos las columnas longitud, latitud y manzana, ya que la precisión geoespacial que aportaban no era necesaria para nuestros objetivos. De igual forma, decidimos eliminar las columnas respectivas al mes y año de creación y de cierre, pues es información redundante que podemos obtener con los atributos de fecha de creación y de cierre. Además, identificamos valores nulos en la columna manzana y decidimos eliminarlos para mantener la coherencia en los datos. Por otro lado, detectamos una inconsistencia en los nombres de una delegación, ya que "Cuajimalpa" y "Cuajimalpa de Morelos" aparecían como entradas separadas. Para evitar duplicidades y asegurar la uniformidad en la información, unificamos ambas bajo una única denominación estándar. Estas acciones nos permitieron depurar la base de datos y garantizar una estructura más limpia y confiable para el análisis.
+Para optimizar nuestro análisis, eliminamos las columnas `latitud`, `longitud` y `manzana`, ya que la precisión geoespacial que aportaban no era necesaria para nuestros objetivos. También eliminamos las columnas `anio_creacion`, `mes_creacion`, `anio_cierre` y `mes_cierre`, pues esta información es redundante y puede derivarse directamente de los campos `fecha_creacion` y `fecha_cierre`.
 
-Dicho lo anterior, para realizar la limpieza de los datos debe proceder a escribir las siguientes instrucciones en el editor (TablePlus).
+Además, realizamos una depuración semántica de los valores. 
+
+- Identificamos que algunas columnas contenían valores que representaban datos faltantes mediante cadenas como `'N/A'` o `'NULL'`, las cuales no son reconocidas como valores nulos reales en SQL. Estos fueron reemplazados por `NULL` reales para garantizar la integridad en los análisis.
+
+También unificamos la representación de alcaldías: 
+
+- por ejemplo, los valores `'CUAJIMALPA'` y `'CUAJIMALPA DE MORELOS'` aparecían como entradas separadas. Para evitar duplicidades y asegurar la uniformidad, se homologaron todas las variantes a `'CUAJIMALPA DE MORELOS'` (el nombre oficial de dicha alcaldía).
+
+Finalmente, detectamos algunas tuplas con una inconsistencia temporal, donde la hora y fecha de cierre eran anteriores a la de creación. Estas fueron eliminadas para mantener la coherencia cronológica en los registros.
+
+Dicho lo anterior, la limpieza se realizó con las siguientes instrucciones:
 
 ```sql
-ALTER TABLE llamadas_911  
-DROP COLUMN latitud,  
-DROP COLUMN longitud,  
-DROP COLUMN manzana,
-DROP COLUMN anio_creacion,
-DROP COLUMN mes_creacion,
-DROP COLUMN anio_cierre,
-DROP COLUMN mes_cierre;
+-- Eliminar columnas innecesarias
+ALTER TABLE llamadas_911
+DROP COLUMN latitud,
+DROP COLUMN longitud,
+DROP COLUMN manzana,
+DROP COLUMN anio_creacion,
+DROP COLUMN mes_creacion,
+DROP COLUMN anio_cierre,
+DROP COLUMN mes_cierre;
 
-UPDATE llamadas_911 
-SET alcaldia_cierre = 'CUAJIMALPA' 
-WHERE alcaldia_cierre IN ('CUAJIMALPA','CUAJIMALPA DE MORELOS');
+-- Reemplazar valores que simulan nulos con valores NULL reales
+UPDATE llamadas_911
+SET alcaldia_cierre = NULL
+WHERE alcaldia_cierre IN ('N/A', 'NULL');
+
+UPDATE llamadas_911
+SET colonia_cierre = NULL
+WHERE colonia_cierre IN ('N/A', 'NULL');
+
+-- Unificar alcaldías
+UPDATE llamadas_911
+SET alcaldia_cierre = 'CUAJIMALPA DE MORELOS'
+WHERE UPPER(alcaldia_cierre) LIKE '%CUAJIMALPA%';
+
+-- Eliminar tupla con fecha y hora de cierre inválidas
+DELETE FROM llamadas_911
+WHERE hora_cierre < hora_creacion AND fecha_cierre <= fecha_creacion;
 ```
+
 ---
 ### 8. Normalización de la Base de Datos
 
-Una vez limpia la base, se procedió a su normalización, separando datos redundantes en nuevas entidades con relaciones entre sí. El proceso incluyó:
+Una vez completada la limpieza, procedimos a **normalizar la tabla `llamadas_911`**, eliminando redundancias y mejorando la integridad de los datos. Este proceso permitió separar información repetida (como ubicación y clasificación del incidente) en **tablas independientes**, facilitando la escalabilidad y eficiencia de la base.
 
-- Creación de las nuevas tablas ubicacion_cierre, clasificacion y llamada.
+El proceso incluyó:
 
-- Inserción de datos con claves foráneas desde llamadas_911.
+- Creación de las tablas `ubicacion_cierre`, `clasificacion` y `llamada`.
+- Poblado de las nuevas tablas con datos únicos desde `llamadas_911`, garantizando integridad referencial mediante claves foráneas.
+- Eliminación de la tabla original y su respaldo (`llamadas_911_respaldo`) una vez migrados todos los datos.
+- Creación de una vista homónima `llamadas_911` que unifica los datos necesarios para el análisis, sin comprometer la normalización.
 
-- Eliminación de la tabla original llamadas_911 y su respaldo.
-
-- Creación de una vista homónima que simplifica futuros análisis.
+### Script de normalización:
 
 ```sql
 -- Tabla de ubicación
 CREATE TABLE ubicacion_cierre (
-  id SERIAL PRIMARY KEY,
-  colonia_cierre TEXT NOT NULL,
-  alcaldia_cierre TEXT NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
+  colonia_cierre VARCHAR(150) NOT NULL,
+  alcaldia_cierre VARCHAR(100) NOT NULL,
   UNIQUE(colonia_cierre, alcaldia_cierre)
 );
 
 -- Tabla de clasificación
 CREATE TABLE clasificacion (
-  id SERIAL PRIMARY KEY,
-  incidente TEXT NOT NULL,
-  categoria_incidente TEXT NOT NULL,
-  clas_con_falsa_alarma TEXT
+  id BIGSERIAL PRIMARY KEY,
+  incidente VARCHAR(100) NOT NULL,
+  categoria_incidente VARCHAR(100) NOT NULL,
+  clas_con_falsa_alarma VARCHAR(100)
 );
 
 -- Tabla principal normalizada
 CREATE TABLE llamada (
-  folio TEXT PRIMARY KEY,
+  folio VARCHAR(50) PRIMARY KEY,
   fecha_creacion DATE NOT NULL,
   hora_creacion TIME NOT NULL,
   fecha_cierre DATE NOT NULL,
   hora_cierre TIME NOT NULL,
-  codigo_cierre CHAR(1) CHECK (codigo_cierre IN ('A', 'I', 'N', 'D', 'F')),
-  ubicacion_cierre_id INT NOT NULL REFERENCES ubicacion_cierre(id),
-  clasificacion_id INT NOT NULL REFERENCES clasificacion(id)
+  codigo_cierre CHAR(1) NOT NULL CHECK (codigo_cierre IN ('A', 'I', 'N', 'D', 'F')),
+  ubicacion_cierre_id BIGINT NOT NULL REFERENCES ubicacion_cierre(id),
+  clasificacion_id BIGINT NOT NULL REFERENCES clasificacion(id)
 );
 
 -- Poblar ubicación
 INSERT INTO ubicacion_cierre (colonia_cierre, alcaldia_cierre)
-SELECT DISTINCT colonia_cierre, alcaldia_cierre FROM llamadas_911;
+SELECT DISTINCT colonia_cierre, alcaldia_cierre
+FROM llamadas_911;
 
 -- Poblar clasificación
 INSERT INTO clasificacion (incidente, categoria_incidente, clas_con_falsa_alarma)
-SELECT DISTINCT incidente_c4, categoria_incidente_c4, clas_con_f_alarma FROM llamadas_911;
+SELECT DISTINCT incidente_c4, categoria_incidente_c4, clas_con_f_alarma
+FROM llamadas_911;
 
 -- Poblar llamada
 INSERT INTO llamada (
@@ -290,28 +320,38 @@ SELECT
   SUBSTRING(l.codigo_cierre FROM 1 FOR 1),
   uc.id,
   c.id
-FROM llamadas_911 l
-JOIN ubicacion_cierre uc
+FROM llamadas_911 AS l
+JOIN ubicacion_cierre AS uc
   ON l.colonia_cierre = uc.colonia_cierre AND l.alcaldia_cierre = uc.alcaldia_cierre
-JOIN clasificacion c
-  ON l.incidente_c4 = c.incidente AND l.categoria_incidente_c4 = c.categoria_incidente;
+JOIN clasificacion AS c
+  ON l.incidente_c4 = c.incidente
+  AND l.categoria_incidente_c4 = c.categoria_incidente
+  AND l.clas_con_f_alarma = c.clas_con_falsa_alarma;
 
 -- Borrado final
 DROP TABLE llamadas_911;
 DROP TABLE llamadas_911_respaldo;
 
--- Vista para consultas
+-- Vista para análisis simplificado
 CREATE VIEW llamadas_911 AS (
-  SELECT 
-    l.folio, l.fecha_creacion, l.hora_creacion,
-    l.fecha_cierre, l.hora_cierre, l.codigo_cierre,
-    uc.colonia_cierre, uc.alcaldia_cierre,
-    c.incidente, c.categoria_incidente, c.clas_con_falsa_alarma
-  FROM llamada l
-  JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-  JOIN clasificacion c ON l.clasificacion_id = c.id
+  SELECT
+    l.folio,
+    l.fecha_creacion,
+    l.hora_creacion,
+    l.fecha_cierre,
+    l.hora_cierre,
+    l.codigo_cierre,
+    uc.colonia_cierre,
+    uc.alcaldia_cierre,
+    c.incidente,
+    c.categoria_incidente,
+    c.clas_con_falsa_alarma
+  FROM llamada AS l
+  JOIN ubicacion_cierre AS uc ON l.ubicacion_cierre_id = uc.id
+  JOIN clasificacion AS c ON l.clasificacion_id = c.id
 );
 ```
+Gracias a esta normalización, eliminamos duplicidad de datos, mejoramos la estructura lógica del esquema y preparamos la base para un análisis más ágil, seguro y reutilizable.
 
 ---
 ## 9. Análisis Exploratorio de Emergencias 911
