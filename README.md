@@ -201,10 +201,10 @@ FROM llamadas_911;
 - **Valores nulos:**
 
 ```sql
-	SELECT manzana, count(*)
-	from llamadas_911
-	where manzana = 'NA'
-	group by manzana;
+SELECT manzana, count(*)
+from llamadas_911
+where manzana = 'NA'
+group by manzana;
 ```
 
 - **Valores repetidos:**
@@ -216,12 +216,12 @@ Se puede observar que las columnas `mes_creacion`, `anio_creacion` y `mes_creaci
 Mediante un análisis de coherencia entre la fecha y la hora de creación y cierre para descartar aquellas tuplas inconsistentes ejecutamos la siguiente consulta en el editor:
 
 ```sql
-	SELECT *
-	From llamadas_911
-	WHERE hora_cierre < hora_creacion AND fecha_cierre <= fecha_creacion;
+SELECT *
+From llamadas_911
+WHERE hora_cierre < hora_creacion AND fecha_cierre <= fecha_creacion;
 ```
-
 Esta consulta nos devolvió varias tuplas en donde la fecha fue la misma, pero la hora de creación fue posterior a la hora de creación. Este error se pudo dar a un mal registro de la hora o fecha por parte de los reportes que se dan de las llamadas del 911.
+
 ---
 ## 7. Ejecución automática del script
 
