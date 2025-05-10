@@ -208,7 +208,32 @@ Mediante un análisis de coherencia entre la fecha y la hora de creación y cier
 ```
 Esta consulta nos devolvió varias tuplas en donde la fecha fue la misma, pero la hora de creación fue posterior a la hora de creación. Este error se pudo dar a un mal registro de la hora o fecha por parte de los reportes que se dan de las llamadas del 911.
 
-### 7. Limpieza de datos 
+---
+## 7. Ejecución automática del script
+
+Todo el proceso de limpieza, normalización y creación de vistas está contenido en el archivo `script_proyecto_911.sql`.
+
+📌 El script ha sido probado de principio a fin y no requiere intervención manual.
+
+Para ejecutarlo desde una consola SQL (como `psql`), basta con:
+
+```sql
+\i script_proyecto_911.sql
+```
+
+** Este script debe ejecutarse **después de haber cargado manualmente el CSV a la tabla `llamadas_911`**. Asegúrate de que la tabla esté presente antes de iniciar.*
+
+---
+
+## 7. Diagrama Entidad-Relación (ERD)
+
+El siguiente diagrama muestra el modelo entidad-relación resultante tras la normalización de la base de datos `llamadas_911`:
+
+{insertar PDF} 
+
+Este modelo cumple con la Cuarta Forma Normal (4FN), separando correctamente las dependencias funcionales y multivaluadas entre ubicaciones, clasificaciones e identificadores únicos de llamada.
+
+### 8. Limpieza de datos 
 Para optimizar nuestro análisis, eliminamos las columnas `latitud`, `longitud` y `manzana`, ya que la precisión geoespacial que aportaban no era necesaria para nuestros objetivos. También eliminamos las columnas `anio_creacion`, `mes_creacion`, `anio_cierre` y `mes_cierre`, pues esta información es redundante y puede derivarse directamente de los campos `fecha_creacion` y `fecha_cierre`.
 
 Además, realizamos una depuración semántica de los valores. 
@@ -254,7 +279,7 @@ WHERE hora_cierre < hora_creacion AND fecha_cierre <= fecha_creacion;
 ```
 
 ---
-### 8. Normalización de la Base de Datos
+### 9. Normalización de la Base de Datos
 
 Una vez completada la limpieza, procedimos a **normalizar la tabla `llamadas_911`**, eliminando redundancias y mejorando la integridad de los datos. Este proceso permitió separar información repetida (como ubicación y clasificación del incidente) en **tablas independientes**, facilitando la escalabilidad y eficiencia de la base.
 
@@ -354,7 +379,7 @@ CREATE VIEW llamadas_911 AS (
 Gracias a esta normalización, eliminamos duplicidad de datos, mejoramos la estructura lógica del esquema y preparamos la base para un análisis más ágil, seguro y reutilizable.
 
 ---
-## 9. Análisis Exploratorio de Emergencias 911
+## 10. Análisis Exploratorio de Emergencias 911
 
 A continuación se presentan diversas consultas SQL desarrolladas para responder preguntas clave sobre las llamadas al 911 durante el año 2020 en la Ciudad de México. Este análisis busca entender patrones, identificar zonas prioritarias y evaluar el impacto del confinamiento por COVID-19 en las emergencias reportadas.
 
