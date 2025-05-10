@@ -145,7 +145,8 @@ Finalmente, el folio es único en cada llamada, y está formado por un código a
 
 Se contabilizarán frecuencias como llamadas por categoría, por incidente, por alcaldía y colonia para poder agrupar distintas variables de interés de acuerdo a la frecuencia que se presente.
 
-- Frecuencia por categoría:
+- **Frecuencia por categoría:**
+
 ```sql
 SELECT COUNT(*) AS frecuencia,
 		categoria_incidente_c4
@@ -153,7 +154,9 @@ FROM llamadas_911
 GROUP BY categoria_incidente_c4
 ORDER BY COUNT(*) DESC;
 ```
-- Frecuencia por incidente:
+
+- **Frecuencia por incidente:**
+
 ```sql
 SELECT COUNT(*) AS frecuencia,
 		incidente_c4
@@ -161,7 +164,9 @@ FROM llamadas_911
 GROUP BY incidente_c4
 ORDER BY COUNT(*) DESC;
 ```
-- Frecuencia por alcaldía:
+
+- **Frecuencia por alcaldía:**
+
 ```sql
 SELECT COUNT(*) AS frecuencia,
 		alcaldia_cierre
@@ -169,7 +174,9 @@ FROM llamadas_911
 GROUP BY alcaldia_cierre
 ORDER BY COUNT(*) DESC;
 ```
-- Frecuencia por colonia:
+
+- **Frecuencia por colonia:**
+
 ```sql
 SELECT COUNT(*) AS frecuencia,
 		colonia_cierre
@@ -177,7 +184,9 @@ FROM llamadas_911
 GROUP BY colonia_cierre
 ORDER BY COUNT(*) DESC;
 ```
-- Máximos y mínimos:
+
+- **Máximos y mínimos:**
+
 Obtener los máximos y mínimos de cada uno de los atributos es esencial para saber cómo se acota nuestra información. Además, nos ayuda a ver la cantidad relativa de cada uno de los valores de cada tupla. Para obtener los valores mínimos y máximos se realizó la siguiente consulta:
 
 ```sql
@@ -189,25 +198,30 @@ SELECT 	MIN(anio_creacion) AS min_anio_creacion,MAX(anio_creacion) AS max_anio_c
 FROM llamadas_911;
 ```
 
-- Valores nulos
+- **Valores nulos:**
+
 ```sql
 	SELECT manzana, count(*)
 	from llamadas_911
 	where manzana = 'NA'
 	group by manzana;
 ```
-- Valores repetidos:
-Se puede observar que las columnas mes_creacion, anio_creacion y mes_creacion, mes_cierre son repetitivos para la columna fecha_creacion y fecha_cierre respectivamente. Dado que, a través de los datos de la fecha, se pueden obtener estos valores existe una redundancia en contenido.
 
-- Valores inconsistentes: 
+- **Valores repetidos:**
+
+Se puede observar que las columnas `mes_creacion`, `anio_creacion` y `mes_creacion`, `mes_cierre` son repetitivos para la columna `fecha_creacion` y `fecha_cierre` respectivamente. Dado que, a través de los datos de la fecha, se pueden obtener estos valores existe una redundancia en contenido.
+
+- **Valores inconsistentes:**
+
 Mediante un análisis de coherencia entre la fecha y la hora de creación y cierre para descartar aquellas tuplas inconsistentes ejecutamos la siguiente consulta en el editor:
+
 ```sql
 	SELECT *
 	From llamadas_911
-	WHERE hora_cierre<hora_creacion AND fecha_cierre<=fecha_creacion;
+	WHERE hora_cierre < hora_creacion AND fecha_cierre <= fecha_creacion;
 ```
-Esta consulta nos devolvió varias tuplas en donde la fecha fue la misma, pero la hora de creación fue posterior a la hora de creación. Este error se pudo dar a un mal registro de la hora o fecha por parte de los reportes que se dan de las llamadas del 911.
 
+Esta consulta nos devolvió varias tuplas en donde la fecha fue la misma, pero la hora de creación fue posterior a la hora de creación. Este error se pudo dar a un mal registro de la hora o fecha por parte de los reportes que se dan de las llamadas del 911.
 ---
 ## 7. Ejecución automática del script
 
