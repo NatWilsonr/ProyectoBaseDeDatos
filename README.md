@@ -45,6 +45,13 @@ términos de seguridad, tiempos de respuesta y tipos de incidentes reportados.
 2. **Uso responsable:** El análisis debe servir para mejorar la seguridad y la gestión de emergencias, evitando usos que generen discriminación o vigilancia indebida.
 3. **Transparencia y exactitud:** Dada la premura de atención en emergencias, los datos pueden contener errores o sesgos que deben considerarse en los análisis.
 
+## Proceso de normalización de la base de datos 
+{agregar descripción} 
+
+![Image](https://github.com/user-attachments/assets/aff4a4a4-92cd-4396-b8ef-5a2ae00cb843)
+
+![Image](https://github.com/user-attachments/assets/23bed368-7fe0-4367-89ae-70cbe702c649)
+
 
 ## Diagrama Entidad-Relación (ERD)
 
