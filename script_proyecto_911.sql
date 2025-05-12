@@ -19,6 +19,12 @@ DROP COLUMN mes_creacion,
 DROP COLUMN mes_cierre;
 
 -- 3. LIMPIEZA DE INCONSISTENCIAS EN TEXTO Y FORMATO
+
+-- Eliminar valores nulos en los atributos colonia_cierre o alcaldia_cierre
+DELETE *
+FROM llamadas_911
+WHERE colonia_cierre IS NULL OR alcaldia_cierre IS NULL;
+
 -- Unificamos valores como 'N/A', 'NULL' y nombres de alcaldías inconsistentes
 UPDATE llamadas_911
 SET alcaldia_cierre = NULL
@@ -69,10 +75,6 @@ CREATE TABLE llamada (
     clasificacion_id BIGINT NOT NULL REFERENCES clasificacion(id)
 );
 
--- Eliminar valores nulos en los atributos colonia_cierre o alcaldia_cierre
-DELETE *
-FROM llamadas_911
-WHERE colonia_cierre IS NULL OR alcaldia_cierre IS NULL;
 
 -- 7. INSERTAR EN TABLAS NORMALIZADAS
 INSERT INTO ubicacion_cierre (colonia_cierre, alcaldia_cierre)
