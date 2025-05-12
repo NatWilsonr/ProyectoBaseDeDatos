@@ -335,6 +335,11 @@ CREATE TABLE llamada (
   clasificacion_id BIGINT NOT NULL REFERENCES clasificacion(id)
 );
 
+-- Eliminar atributos con alcaldia_cierre o colonia_cierre nulos
+DELETE *
+FROM llamadas_911
+WHERE colonia_cierre IS NULL OR alcaldia_cierre IS NULL;
+
 -- Poblar ubicación
 INSERT INTO ubicacion_cierre (colonia_cierre, alcaldia_cierre)
 SELECT DISTINCT colonia_cierre, alcaldia_cierre
