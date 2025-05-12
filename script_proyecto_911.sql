@@ -161,3 +161,144 @@ GROUP BY mes_creacion
 ORDER BY mes_creacion);
 SELECT * FROM vista_llamadas_mensuales;
 
+--- Indica, por semestre, numero de llamadas por clasificacion en cada colonia
+
+CREATE VIEW clasificacion_por_colonias AS
+SELECT 
+    colonia_cierre, 
+    SUM(CASE WHEN clas_con_f_alarma = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
+    SUM(CASE WHEN clas_con_f_alarma = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
+    SUM(CASE WHEN clas_con_f_alarma = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
+    SUM(CASE WHEN clas_con_f_alarma = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
+    SUM(CASE WHEN clas_con_f_alarma = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
+FROM 
+    llamadas_911
+WHERE 
+    fecha_creacion >= '2020-06-30' ------cambiar de acuerdo al semestre 
+GROUP BY 
+    colonia_cierre;
+    
+---------- Indica, por semestre, numero de llamadas por clasificacion en cada alcaldía
+
+CREATE VIEW clasificacion_por_alcaldias AS
+	SELECT 
+    alcaldia_cierre, 
+    SUM(CASE WHEN clas_con_f_alarma = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
+    SUM(CASE WHEN clas_con_f_alarma = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
+    SUM(CASE WHEN clas_con_f_alarma = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
+    SUM(CASE WHEN clas_con_f_alarma = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
+    SUM(CASE WHEN clas_con_f_alarma = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
+FROM 
+    llamadas_911
+WHERE 
+    fecha_creacion >= '2020-06-30'
+GROUP BY 
+    alcaldia_cierre;
+   
+  
+
+--------  Porcentaje de delitos(clasificación) por alcaldia y colonia
+
+CREATE VIEW llamadas_densas_clasificacion_alcaldia AS (
+SELECT 
+  alcaldia_cierre,
+  clas_con_f_alarma,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY alcaldia_cierre), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+GROUP BY alcaldia_cierre, clas_con_f_alarma
+ORDER BY alcaldia_cierre, porcentaje_llamadas DESC
+);
+
+
+CREATE VIEW llamadas_densas_clasificacion_colonia AS (
+SELECT 
+  colonia_cierre,
+  clas_con_f_alarma,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY colonia_cierre), 2) || ' %' AS porcentaje_llamadas 
+FROM llamadas_911
+GROUP BY colonia_cierre, clas_con_f_alarma
+ORDER BY colonia_cierre, porcentaje_llamadas DESC);
+
+
+---------- Porcentajes de delitos(categoria) por alcaldía y colonia
+
+CREATE VIEW llamadas_densas_categoria_alcaldia AS (
+SELECT 
+  alcaldia_cierre,
+  categoria_incidente_c4,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY alcaldia_cierre), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+WHERE fecha_creacion >= '2020-06-30'
+GROUP BY alcaldia_cierre, categoria_incidente_c4
+ORDER BY alcaldia_cierre, porcentaje_llamadas DESC);
+
+CREATE VIEW llamadas_densas_categoría_colonia AS(
+SELECT 
+  colonia_cierre,
+  categoria_incidente_c4,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY colonia_cierre), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+WHERE fecha_creacion >= '2020-06-30'
+GROUP BY colonia_cierre, categoria_incidente_c4
+ORDER BY colonia_cierre, porcentaje_llamadas DESC);
+
+
+
+--------Porcentajes de delitos por mes
+
+CREATE VIEW llamadas_clasificacion_mes AS (
+SELECT 
+  mes_creacion,
+  clas_con_f_alarma,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY mes_creacion), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+GROUP BY mes_creacion, clas_con_f_alarma
+ORDER BY mes_creacion, porcentaje_llamadas DESC
+);
+
+CREATE VIEW llamadas_categoria_mes AS (
+SELECT 
+  mes_creacion,
+  categoria_incidente_c4,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY mes_creacion), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+GROUP BY mes_creacion, categoria_incidente_c4
+ORDER BY mes_creacion, porcentaje_llamadas DESC
+
+);
+
+CREATE VIEW compara_semestres_clas AS (
+SELECT 
+  CASE 
+    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
+    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
+  END AS semestre,
+  clas_con_f_alarma,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY 
+    CASE 
+      WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
+      WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
+    END
+  ), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+GROUP BY semestre, clas_con_f_alarma
+ORDER BY semestre, porcentaje_llamadas DESC);
+
+
+CREATE VIEW compara_semestres_cate AS (
+SELECT 
+  CASE 
+    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
+    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
+  END AS semestre,
+  categoria_incidente_c4,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY 
+    CASE 
+      WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
+      WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
+    END
+  ), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+GROUP BY semestre, categoria_incidente_c4
+ORDER BY semestre, porcentaje_llamadas DESC);
+
