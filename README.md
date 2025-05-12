@@ -573,6 +573,8 @@ ORDER BY semestre, porcentaje_llamadas DESC;
 
 ```
 ### Volumen de llamadas a travez del tiempo
+
+```sql
 -- Volumen de llamadas mensuales
 SELECT 
   EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
@@ -634,7 +636,7 @@ FROM llamadas_911
 WHERE categoria_incidente = 'Agresion'
 GROUP BY mes_creacion
 ORDER BY mes_creacion;
-
+```
 ### Cantidad y porcentaje de códigos de cierre
 
 Estas consultas muestran con qué frecuencia se registraron distintos códigos de cierre en las llamadas al 911 durante el año 2020, tanto a nivel de alcaldía como de colonia.  Estas estadísticas ayudan a identificar ciertas prioridades en función del tipo y la frecuencia de emergencias que se presentan en distintas zonas. Además, permiten observar que, en la mayoría de los casos, predominan los códigos de cierre negativos, lo que puede indicar falta de atención, cancelaciones o problemas en la respuesta a las llamadas. Esto puede ayudar a tomar mejores decisiones sobre dónde actuar y cómo distribuir los recursos.
