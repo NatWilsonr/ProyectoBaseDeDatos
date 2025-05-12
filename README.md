@@ -48,9 +48,8 @@ términos de seguridad, tiempos de respuesta y tipos de incidentes reportados.
 ## Proceso de normalización de la base de datos 
 {agregar descripción} 
 
-![Image](https://github.com/user-attachments/assets/aff4a4a4-92cd-4396-b8ef-5a2ae00cb843)
-
-![Image](https://github.com/user-attachments/assets/23bed368-7fe0-4367-89ae-70cbe702c649)
+![Image](https://github.com/user-attachments/assets/476b6ab3-aa38-4ead-a308-8b60f1f4776e)
+![Image](https://github.com/user-attachments/assets/94b886d6-b4d4-465a-a55b-506fb5a8367c)
 
 
 ## Diagrama Entidad-Relación (ERD)
