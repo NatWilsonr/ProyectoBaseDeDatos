@@ -572,6 +572,68 @@ GROUP BY
 ORDER BY semestre, porcentaje_llamadas DESC;
 
 ```
+### Volumen de llamadas a travez del tiempo
+-- Volumen de llamadas mensuales
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas
+FROM llamadas_911
+GROUP BY mes_creacion
+ORDER BY mes_creacion;
+
+-- Llamadas con objeto de DELITO mensualmente
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas
+FROM llamadas_911
+WHERE clas_con_falsa_alarma = 'DELITO'
+GROUP BY mes_creacion
+ORDER BY mes_creacion;
+
+-- Llamadas con objeto de EMERGENCIA mensualmente
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas
+FROM llamadas_911
+WHERE clas_con_falsa_alarma = 'EMERGENCIA'
+GROUP BY mes_creacion
+ORDER BY mes_creacion;
+
+-- Llamadas con objeto de URGENCIAS MEDICAS mensualmente
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas
+FROM llamadas_911
+WHERE clas_con_falsa_alarma = 'URGENCIAS MEDICAS'
+GROUP BY mes_creacion
+ORDER BY mes_creacion;
+
+-- Llamadas con objeto de SERVICIO mensualmente
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas
+FROM llamadas_911
+WHERE clas_con_falsa_alarma = 'SERVICIO'
+GROUP BY mes_creacion
+ORDER BY mes_creacion;
+
+-- Llamadas con objeto de DELITO-ROBO mensualmente
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas
+FROM llamadas_911
+WHERE categoria_incidente = 'Robo'
+GROUP BY mes_creacion
+ORDER BY mes_creacion;
+
+-- Llamadas con objeto de DELITO-Agresion mensualmente
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas
+FROM llamadas_911
+WHERE categoria_incidente = 'Agresion'
+GROUP BY mes_creacion
+ORDER BY mes_creacion;
 
 ### Cantidad y porcentaje de códigos de cierre
 
