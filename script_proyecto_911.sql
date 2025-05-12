@@ -142,3 +142,22 @@ CREATE VIEW llamadas_911 AS (
   JOIN clasificacion AS clasi ON l.clasificacion_id = clasi.id
 );
 
+ -- Vista para consulta de llamadas a traves de los meses
+CREATE OR REPLACE VIEW vista_llamadas_mensuales AS (
+SELECT 
+  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+  COUNT(*) AS total_llamadas,
+  
+  SUM(CASE WHEN clas_con_falsa_alarma = 'DELITO' THEN 1 ELSE 0 END) AS llamadas_delito,
+  SUM(CASE WHEN clas_con_falsa_alarma = 'EMERGENCIA' THEN 1 ELSE 0 END) AS llamadas_emergencia,
+  SUM(CASE WHEN clas_con_falsa_alarma = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS llamadas_urgencias_medicas,
+  SUM(CASE WHEN clas_con_falsa_alarma = 'SERVICIO' THEN 1 ELSE 0 END) AS llamadas_servicio,
+  
+  SUM(CASE WHEN categoria_incidente = 'Robo' THEN 1 ELSE 0 END) AS llamadas_robo,
+  SUM(CASE WHEN categoria_incidente = 'Agresion' THEN 1 ELSE 0 END) AS llamadas_agresion
+
+FROM llamadas_911
+GROUP BY mes_creacion
+ORDER BY mes_creacion);
+SELECT * FROM vista_llamadas_mensuales;
+
