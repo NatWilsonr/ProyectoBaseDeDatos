@@ -39,10 +39,21 @@ El objetivo de este proyecto es analizar las llamadas registradas al 911 durante
 términos de seguridad, tiempos de respuesta y tipos de incidentes reportados.
 - Se evaluará si existen contrastes significativos en la atención recibida y en la percepción de inseguridad, considerando los prejuicios asociados a colonias tradicionalmente catalogadas como peligrosas frente a aquellas consideradas privilegiadas. Este enfoque permitirá comprender las desigualdades en la gestión de emergencias y contribuir a una discusión más informada sobre seguridad y acceso a servicios en la ciudad.
 
+
 ## Consideraciones Éticas
 1. **Protección de datos personales:** Aunque los datos no incluyen información sensible, la ubicación podría permitir identificaciones indirectas. El C5 protege la identidad mediante un radio de precisión adecuado.
 2. **Uso responsable:** El análisis debe servir para mejorar la seguridad y la gestión de emergencias, evitando usos que generen discriminación o vigilancia indebida.
 3. **Transparencia y exactitud:** Dada la premura de atención en emergencias, los datos pueden contener errores o sesgos que deben considerarse en los análisis.
+
+
+## Diagrama Entidad-Relación (ERD)
+
+El siguiente diagrama muestra el modelo entidad-relación resultante tras la normalización de la base de datos `llamadas_911`:
+
+![Image](https://github.com/user-attachments/assets/49d98c5c-5878-44e6-a5af-2c04a7eec15d)
+
+Este modelo cumple con la Cuarta Forma Normal (4FN), separando correctamente las dependencias funcionales y multivaluadas entre ubicaciones, clasificaciones e identificadores únicos de llamada.
+
 
 ## Instalación y Uso
 1. **Clonar el repositorio**:
@@ -238,14 +249,6 @@ Para ejecutarlo desde una consola SQL (como `psql`), basta con:
 ** Este script debe ejecutarse **después de haber cargado manualmente el CSV a la tabla `llamadas_911`**. Asegúrate de que la tabla esté presente antes de iniciar.*
 
 ---
-
-## 7. Diagrama Entidad-Relación (ERD)
-
-El siguiente diagrama muestra el modelo entidad-relación resultante tras la normalización de la base de datos `llamadas_911`:
-
-{insertar PDF} 
-
-Este modelo cumple con la Cuarta Forma Normal (4FN), separando correctamente las dependencias funcionales y multivaluadas entre ubicaciones, clasificaciones e identificadores únicos de llamada.
 
 ### 8. Limpieza de datos 
 Para optimizar nuestro análisis, eliminamos las columnas `latitud`, `longitud` y `manzana`, ya que la precisión geoespacial que aportaban no era necesaria para nuestros objetivos. También eliminamos las columnas `anio_creacion`, `mes_creacion`, `anio_cierre` y `mes_cierre`, pues esta información es redundante y puede derivarse directamente de los campos `fecha_creacion` y `fecha_cierre`.
