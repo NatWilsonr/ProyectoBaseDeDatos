@@ -416,35 +416,37 @@ A continuación se presentan diversas consultas SQL desarrolladas para responder
 Las siguientes consultas implican la formación de dos CTE que nos permiten consultar la cantidad de llamadas de acuerdo a su clasificación, ya sea en las diferentes alcaldías y colonias. Estas subtablas (que decidimos no fueran vistas para poder modificar el semestre consultado), nos permiten hacer aquellas comparaciones entre alcaldías y colonias con diferentes situaciones socioeconómicas y de localización. De igual forma, podemos ver la evolución que tuvo la cantidad de llamadas y sus propósitos a lo largo del año 2020, que, según datos externos, es donde hubo la mayor explosión de casos de COVID-19.
 
 ```sql
-WITH clasificacion_por_colonias AS (
+CREATE VIEW clasificacion_por_colonias AS
 SELECT 
     colonia_cierre, 
-    SUM(CASE WHEN categoria_incidente = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
-    SUM(CASE WHEN categoria_incidente = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
-    SUM(CASE WHEN categoria_incidente = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
-    SUM(CASE WHEN categoria_incidente = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
-    SUM(CASE WHEN categoria_incidente = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
+    SUM(CASE WHEN clas_con_f_alarma = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
+    SUM(CASE WHEN clas_con_f_alarma = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
+    SUM(CASE WHEN clas_con_f_alarma = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
+    SUM(CASE WHEN clas_con_f_alarma = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
+    SUM(CASE WHEN clas_con_f_alarma = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
 FROM 
     llamadas_911
 WHERE 
-    fecha_creacion <= '2020-06-30' ------cambiar de acuerdo al semestre 
+    fecha_creacion >= '2020-06-30' ------cambiar de acuerdo al semestre 
 GROUP BY 
-    colonia_cierre
+    colonia_cierre;
     
-),  clasificacion_por_alcaldias AS (
-SELECT 
+---------- Indica, por semestre, numero de llamadas por clasificacion en cada alcaldía
+
+CREATE VIEW clasificacion_por_alcaldias AS
+	SELECT 
     alcaldia_cierre, 
-    SUM(CASE WHEN categoria_incidente = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
-    SUM(CASE WHEN categoria_incidente = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
-    SUM(CASE WHEN categoria_incidente = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
-    SUM(CASE WHEN categoria_incidente = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
-    SUM(CASE WHEN categoria_incidente = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
+    SUM(CASE WHEN clas_con_f_alarma = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
+    SUM(CASE WHEN clas_con_f_alarma = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
+    SUM(CASE WHEN clas_con_f_alarma = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
+    SUM(CASE WHEN clas_con_f_alarma = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
+    SUM(CASE WHEN clas_con_f_alarma = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
 FROM 
     llamadas_911
 WHERE 
-    fecha_creacion <= '2020-06-30'
+    fecha_creacion >= '2020-06-30'
 GROUP BY 
-    alcaldia_cierre);
+    alcaldia_cierre;
 ```
 
 ### Porcentaje de llamadas por categoría y clasificación
@@ -503,46 +505,39 @@ ORDER BY colonia_cierre, porcentaje_llamadas DESC
 La siguiente consulta nos permite ver la evolución de determinada clasificación o categoría de llamada a través de los meses del respectivo año. Estas CTE reflejan el comportamiento de la sociedad ya sea a los picos por COVID-19 como a las celebraciones, eventos y festividades presentes como cualquier otro año, pero ahora en el 2020 con la pandemia como telón de fondo.
 
 ```sql
-WITH llamadas_clasificacion_mes AS (
-  SELECT 
-    EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
-    clas_con_falsa_alarma,
-    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY EXTRACT(MONTH FROM fecha_creacion)), 2) || ' %' AS porcentaje_llamadas
-  FROM llamadas_911
-  GROUP BY EXTRACT(MONTH FROM fecha_creacion), clas_con_falsa_alarma
-  ORDER BY mes_creacion, porcentaje_llamadas DESC
-)
+CREATE VIEW llamadas_clasificacion_mes AS (
+SELECT 
+  mes_creacion,
+  clas_con_f_alarma,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY mes_creacion), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+GROUP BY mes_creacion, clas_con_f_alarma
+ORDER BY mes_creacion, porcentaje_llamadas DESC
+);
 
-SELECT *
-FROM llamadas_clasificacion_mes 
-WHERE clas_con_falsa_alarma = 'EMERGENCIA';
----
+CREATE VIEW llamadas_categoria_mes AS (
+SELECT 
+  mes_creacion,
+  categoria_incidente_c4,
+  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY mes_creacion), 2) || ' %' AS porcentaje_llamadas
+FROM llamadas_911
+GROUP BY mes_creacion, categoria_incidente_c4
+ORDER BY mes_creacion, porcentaje_llamadas DESC
 
-WITH llamadas_categoria_mes AS (
-  SELECT 
-    EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
-    categoria_incidente,
-    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY EXTRACT(MONTH FROM fecha_creacion)), 2) || ' %' AS porcentaje_llamadas
-  FROM llamadas_911
-  GROUP BY EXTRACT(MONTH FROM fecha_creacion), categoria_incidente
-  ORDER BY mes_creacion, porcentaje_llamadas DESC
-)
-
-SELECT *
-FROM llamadas_categoria_mes 
-WHERE categoria_incidente = 'Servicios';
+);
 
 ```
 
 Las siguientes consultas también permiten ver la evolución de la concentración de llamadas de acuerdo a su categoría y su clasificación, diferenciando entre el primer y el segundo semestre. A nuestra sorpresa, no hay tanta variación en porcentajes hacia el segundo semestre en cuanto a temas relacionados con la salud, sin embargo, eso no significa que, en términos totales no hayan aumentado las llamadas en estos campos.
 
 ```sql
+CREATE VIEW compara_semestres_clas AS (
 SELECT 
   CASE 
     WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
     WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
   END AS semestre,
-  clas_con_falsa_alarma,
+  clas_con_f_alarma,
   ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY 
     CASE 
       WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
@@ -550,21 +545,17 @@ SELECT
     END
   ), 2) || ' %' AS porcentaje_llamadas
 FROM llamadas_911
-GROUP BY 
-  CASE 
-    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
-    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
-  END,
-  clas_con_falsa_alarma
-ORDER BY semestre, porcentaje_llamadas DESC;
---
+GROUP BY semestre, clas_con_f_alarma
+ORDER BY semestre, porcentaje_llamadas DESC);
 
+
+CREATE VIEW compara_semestres_cate AS (
 SELECT 
   CASE 
     WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
     WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
   END AS semestre,
-  categoria_incidente,
+  categoria_incidente_c4,
   ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY 
     CASE 
       WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
@@ -572,13 +563,8 @@ SELECT
     END
   ), 2) || ' %' AS porcentaje_llamadas
 FROM llamadas_911
-GROUP BY 
-  CASE 
-    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
-    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
-  END,
-  categoria_incidente
-ORDER BY semestre, porcentaje_llamadas DESC;
+GROUP BY semestre, categoria_incidente_c4
+ORDER BY semestre, porcentaje_llamadas DESC);
 
 ```
 ### Volumen de llamadas a travez del tiempo
