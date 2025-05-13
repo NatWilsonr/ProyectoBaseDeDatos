@@ -747,36 +747,6 @@ CREATE OR REPLACE VIEW vista_top3_colonias_por_emergencia AS (
     );
 ```
 
-### Comparar número de incidentes entre alcaldías
-
-Esta consulta compara el número de incidentes reales vs. falsas alarmas por alcaldía. Te permite evaluar qué tan confiables son las llamadas en cada zona. Alcaldías con alta proporción de falsas alarmas podrían necesitar campañas de concientización o filtros de verificación.
-
-```sql
-SELECT uc.alcaldia_cierre, c.clas_con_falsa_alarma, COUNT(*) AS total_incidentes
-FROM llamada l
-JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-JOIN clasificacion c ON l.clasificacion_id = c.id
-GROUP BY uc.alcaldia_cierre, c.clas_con_falsa_alarma
-ORDER BY c.clas_con_falsa_alarma, total_incidentes DESC;
-```
-
-## **Incidentes más reportados por alcaldía**
-
-Este análisis identifica los tipos de incidentes más frecuentes por alcaldía, permitiendo detectar patrones de riesgo específicos en cada zona. Los resultados ayudan a priorizar intervenciones focalizadas en seguridad, salud o servicios según la problemática predominante.
-
-```sql
-SELECT
-  uc.alcaldia_cierre,
-  c.incidente,
-  c.categoria_incidente,
-  COUNT(*) AS total_reportes
-FROM llamada l
-JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-JOIN clasificacion c ON l.clasificacion_id = c.id
-GROUP BY uc.alcaldia_cierre, c.incidente, c.categoria_incidente
-ORDER BY uc.alcaldia_cierre, total_reportes DESC;
-```
-
 ### Cantidad de llamadas a través del tiempo
 
 Esta consulta nos permite analizar el volumen de llamadas que se realizaron a travez del tiempo. De esta forma, podemos concluir si hubo mas o menos disturbios reportados en la evolución de la pandemia. Así podremos descartar o asegurar la incidencia de ciertos delitos cuando las personas no salian a las calles.
