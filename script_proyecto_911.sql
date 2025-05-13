@@ -302,3 +302,58 @@ FROM llamadas_911
 GROUP BY semestre, categoria_incidente_c4
 ORDER BY semestre, porcentaje_llamadas DESC);
 
+---codigos de cierre por semestre (alcaldias y colonias)
+CREATE VIEW codigo_cierre_alcaldia_1er_semestre1 AS(
+SELECT 
+  codigo_cierre, 
+  COUNT(*) AS cantidad, 
+  ROUND((COUNT(*) * 100.0) / (SELECT COUNT(*) 
+    FROM llamadas_911 
+    WHERE fecha_creacion <= '2020-06-30'), 2)::TEXT || ' %' AS llamadas_densas_codigo_cierre
+FROM llamadas_911
+WHERE fecha_creacion <= '2020-06-30'
+GROUP BY codigo_cierre
+ORDER BY cantidad DESC
+);
+
+CREATE VIEW codigo_cierre_alcaldia_2do_semestre2 AS (
+SELECT 
+  codigo_cierre, 
+  COUNT(*) AS cantidad, 
+  ROUND((COUNT(*) * 100.0) / (SELECT COUNT(*) 
+    FROM llamadas_911 
+    WHERE fecha_creacion >= '2020-06-30'), 2)::TEXT || ' %' AS llamadas_densas_codigo_cierre
+FROM llamadas_911
+WHERE fecha_creacion >= '2020-06-30'
+GROUP BY codigo_cierre
+ORDER BY cantidad DESC
+);
+
+CREATE VIEW codigo_cierre_colonia_1er_semestre AS (
+SELECT 
+  codigo_cierre, 
+  COUNT(*) AS cantidad, 
+  ROUND((COUNT(*) * 100.0) / (
+    SELECT COUNT(*) 
+    FROM llamadas_911 
+    WHERE colonia_cierre = 'POLANCO REFORMA (POLANCO)' AND fecha_creacion <= '2020-06-30'), 2)::TEXT || ' %' AS llamadas_densas_codigo_cierre
+FROM llamadas_911
+WHERE colonia_cierre = 'POLANCO REFORMA (POLANCO)' AND fecha_creacion <= '2020-06-30'
+GROUP BY codigo_cierre
+ORDER BY cantidad DESC
+);
+
+CREATE VIEW codigo_cierre_colonia_2do_semestre AS(
+SELECT 
+  codigo_cierre, 
+  COUNT(*) AS cantidad, 
+  ROUND((COUNT(*) * 100.0) / (
+    SELECT COUNT(*) 
+    FROM llamadas_911 
+    WHERE colonia_cierre = 'POLANCO REFORMA (POLANCO)' AND fecha_creacion >= '2020-06-30'), 2)::TEXT || ' %' AS llamadas_densas_codigo_cierre
+FROM llamadas_911
+WHERE colonia_cierre = 'POLANCO REFORMA (POLANCO)' AND fecha_creacion >= '2020-06-30'
+GROUP BY codigo_cierre
+ORDER BY cantidad DESC
+);
+
