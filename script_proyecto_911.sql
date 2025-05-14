@@ -357,24 +357,17 @@ GROUP BY codigo_cierre
 ORDER BY cantidad DESC
 );
 
-### Promedio del tiempo total de respuesta por alcaldía
+--Promedio del tiempo total de respuesta por alcaldía
 
-Estas dos consultas permiten analizar el promedio en horas del tiempo total de respuesta por alcaldía dividido por el primer semestre y segundo semestre de 2020. Con esto, tenemos la información con respecto a la velocidad promedio de respuesta por parte de las autoridades para resolver los casos en las distintas alcaldías. De este modo, podemos ver si hay preferencia en algunas zonas con respecto a otras.
-
-Primer semestre
-
-```sql
+--Primer semestre
 CREATE VIEW promedio_tiempo_total_respuesta_s1 AS (
 	SELECT alcaldia_cierre, ROUND(SUM(((fecha_cierre - fecha_creacion)*24 + ROUND(EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0, 2)))/COUNT(alcaldia_cierre),2) AS promedio_horas
 	FROM llamadas_911
 	WHERE fecha_creacion<'2020-6-30'
 	GROUP BY alcaldia_cierre
 ORDER BY horas DESC);
-```
 
-Segundo semestre
-
-```sql
+--Segundo semestre
 CREATE VIEW promedio_tiempo_total_respuesta_s2 AS (
 	SELECT alcaldia_cierre, ROUND(SUM((fecha_cierre - fecha_creacion)*24 + EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)/COUNT(alcaldia_cierre),2) AS horas
 	FROM llamadas_911
@@ -382,13 +375,8 @@ CREATE VIEW promedio_tiempo_total_respuesta_s2 AS (
 	GROUP BY alcaldia_cierre
 	ORDER BY horas DESC
 );
-```
 
-### Alcaldías con tiempo promedio de respuesta mayor al promedio total
-
-Una vez que revisamos cuál es el promedio por alcaldía, es de interés conocer aquellas en donde el promedio de dicha alcaldía es mayor al promedio en general de respuesta de todas las alcaldías en todo el año. Para ver qué alcaldías están siendo más tardadas en ser atendidas en promedio. Para esto, se ejecuta la siguiente consulta
-
-```sql
+--Alcaldías con tiempo promedio de respuesta mayor al promedio total
 WITH promedio_total AS (
     SELECT 
         SUM(((fecha_cierre - fecha_creacion) * 24 + 
@@ -403,7 +391,6 @@ tiempos_por_alcaldia AS (
     FROM llamadas_911
     GROUP BY alcaldia_cierre
 )
-
 CREATE VIEW alcaldias_tiempo_respuesta_mayor_al_promedio AS (
 	SELECT tpa.alcaldia_cierre, ROUND(tpa.horas,2)
 	FROM tiempos_por_alcaldia tpa
@@ -411,26 +398,16 @@ CREATE VIEW alcaldias_tiempo_respuesta_mayor_al_promedio AS (
 	WHERE tpa.horas > pt.tiempo
 	ORDER BY tpa.horas DESC
 );
-```
 
-### Tiempo total de respuesta por colonia
-
-Así como se hizo un debido análisis de las alcaldías, de igual manera se realiza para las colonias en donde se ve el tiempo total de respuesta. De igual manera para identificar distintos patrones en tiempo de atención y resolución de problemas.
-
-```sql
+--Tiempo total de respuesta por colonia
 CREATE VIEW tiempo_total_de_respuesta_por_colonia AS (
 	SELECT colonia_cierre, ROUND(SUM(((fecha_cierre - fecha_creacion)*24 + ROUND(EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0, 2))),2) AS horas
 	FROM llamadas_911
 	GROUP BY colonia_cierre
 	ORDER BY horas DESC
 );
-```
 
-### Colonias con tiempo de respuesta por arriba del promedio
-
-Se discrimina en esta consulta a las colonias con mayor tiempo de respuesta con respecto al promedio para identificar zonas de interés para mejorar el servicio de atención. E igual se calcula su variación de tiempo para determinar qué tan alejado está del promedio.
-
-```sql
+--Colonias con tiempo de respuesta por arriba del promedio
 WITH promedio_total AS (
     SELECT 
         SUM(((fecha_cierre - fecha_creacion) * 24 + 
@@ -453,13 +430,8 @@ CREATE VIEW colonias_tiempo_respuesta_mayor_al_promedio AS (
 	WHERE tpc.horas > pt.tiempo
 	ORDER BY tpc.horas DESC
 );
-```
 
-### Colonias con tiempo de respuesta por debajo del promedio
-
-Al igual que el análisis de las colonias con un tiempo de espera superior al promedio se realiza el estudio pertinente para aquellas colonias con menor tiempo de respuesta. A pesar de que el tiempo sea menor, también hace falta ver las condiciones favorables o no de la resolución de la llamada.
-
-```sql
+--Colonias con tiempo de respuesta por debajo del promedio
 WITH promedio_total AS (
     SELECT 
         SUM(((fecha_cierre - fecha_creacion) * 24 + 
