@@ -39,7 +39,6 @@ El objetivo de este proyecto es analizar las llamadas registradas al 911 durante
 términos de seguridad, tiempos de respuesta y tipos de incidentes reportados.
 - Se evaluará si existen contrastes significativos en la atención recibida y en la percepción de inseguridad, considerando los prejuicios asociados a colonias tradicionalmente catalogadas como peligrosas frente a aquellas consideradas privilegiadas. Este enfoque permitirá comprender las desigualdades en la gestión de emergencias y contribuir a una discusión más informada sobre seguridad y acceso a servicios en la ciudad.
 
-
 ## Consideraciones Éticas
 1. **Protección de datos personales:** Aunque los datos no incluyen información sensible, la ubicación podría permitir identificaciones indirectas. El C5 protege la identidad mediante un radio de precisión adecuado.
 2. **Uso responsable:** El análisis debe servir para mejorar la seguridad y la gestión de emergencias, evitando usos que generen discriminación o vigilancia indebida.
@@ -240,24 +239,15 @@ Para ejecutarlo desde una consola SQL (como `psql`), basta con:
 
 ---
 
-### 8. Limpieza de datos 
-## 8.1 Proceso de normalización de la base de datos 
-{agregar descripción} 
-
-![Image](https://github.com/user-attachments/assets/476b6ab3-aa38-4ead-a308-8b60f1f4776e)
-![Image](https://github.com/user-attachments/assets/94b886d6-b4d4-465a-a55b-506fb5a8367c)
-
-
-## 8.2 Diagrama Entidad-Relación (ERD)
+## 7. Diagrama Entidad-Relación (ERD)
 
 El siguiente diagrama muestra el modelo entidad-relación resultante tras la normalización de la base de datos `llamadas_911`:
 
-![Image](https://github.com/user-attachments/assets/49d98c5c-5878-44e6-a5af-2c04a7eec15d)
+{insertar PDF} 
 
 Este modelo cumple con la Cuarta Forma Normal (4FN), separando correctamente las dependencias funcionales y multivaluadas entre ubicaciones, clasificaciones e identificadores únicos de llamada.
 
-## 8.3 Limpieza a nivel código 
-
+### 8. Limpieza de datos 
 Para optimizar nuestro análisis, eliminamos las columnas `latitud`, `longitud` y `manzana`, ya que la precisión geoespacial que aportaban no era necesaria para nuestros objetivos. También eliminamos las columnas `anio_creacion`, `mes_creacion`, `anio_cierre` y `mes_cierre`, pues esta información es redundante y puede derivarse directamente de los campos `fecha_creacion` y `fecha_cierre`.
 
 Además, realizamos una depuración semántica de los valores. 
@@ -417,37 +407,35 @@ A continuación se presentan diversas consultas SQL desarrolladas para responder
 Las siguientes consultas implican la formación de dos CTE que nos permiten consultar la cantidad de llamadas de acuerdo a su clasificación, ya sea en las diferentes alcaldías y colonias. Estas subtablas (que decidimos no fueran vistas para poder modificar el semestre consultado), nos permiten hacer aquellas comparaciones entre alcaldías y colonias con diferentes situaciones socioeconómicas y de localización. De igual forma, podemos ver la evolución que tuvo la cantidad de llamadas y sus propósitos a lo largo del año 2020, que, según datos externos, es donde hubo la mayor explosión de casos de COVID-19.
 
 ```sql
-CREATE VIEW clasificacion_por_colonias AS
+WITH clasificacion_por_colonias AS (
 SELECT 
     colonia_cierre, 
-    SUM(CASE WHEN clas_con_f_alarma = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
-    SUM(CASE WHEN clas_con_f_alarma = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
-    SUM(CASE WHEN clas_con_f_alarma = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
-    SUM(CASE WHEN clas_con_f_alarma = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
-    SUM(CASE WHEN clas_con_f_alarma = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
+    SUM(CASE WHEN categoria_incidente = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
+    SUM(CASE WHEN categoria_incidente = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
+    SUM(CASE WHEN categoria_incidente = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
+    SUM(CASE WHEN categoria_incidente = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
+    SUM(CASE WHEN categoria_incidente = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
 FROM 
     llamadas_911
 WHERE 
-    fecha_creacion >= '2020-06-30' ------cambiar de acuerdo al semestre 
+    fecha_creacion <= '2020-06-30' ------cambiar de acuerdo al semestre 
 GROUP BY 
-    colonia_cierre;
+    colonia_cierre
     
----------- Indica, por semestre, numero de llamadas por clasificacion en cada alcaldía
-
-CREATE VIEW clasificacion_por_alcaldias AS
-	SELECT 
+),  clasificacion_por_alcaldias AS (
+SELECT 
     alcaldia_cierre, 
-    SUM(CASE WHEN clas_con_f_alarma = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
-    SUM(CASE WHEN clas_con_f_alarma = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
-    SUM(CASE WHEN clas_con_f_alarma = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
-    SUM(CASE WHEN clas_con_f_alarma = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
-    SUM(CASE WHEN clas_con_f_alarma = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
+    SUM(CASE WHEN categoria_incidente = 'DELITO' THEN 1 ELSE 0 END) AS Delitos,
+    SUM(CASE WHEN categoria_incidente = 'EMERGENCIA' THEN 1 ELSE 0 END) AS Emergencias,
+    SUM(CASE WHEN categoria_incidente = 'FALTA CÍVICA' THEN 1 ELSE 0 END) AS Falta_Civica,
+    SUM(CASE WHEN categoria_incidente = 'SERVICIO' THEN 1 ELSE 0 END) AS Servicio,
+    SUM(CASE WHEN categoria_incidente = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS Urgencias_Medicas
 FROM 
     llamadas_911
 WHERE 
-    fecha_creacion >= '2020-06-30'
+    fecha_creacion <= '2020-06-30'
 GROUP BY 
-    alcaldia_cierre;
+    alcaldia_cierre);
 ```
 
 ### Porcentaje de llamadas por categoría y clasificación
@@ -506,39 +494,46 @@ ORDER BY colonia_cierre, porcentaje_llamadas DESC
 La siguiente consulta nos permite ver la evolución de determinada clasificación o categoría de llamada a través de los meses del respectivo año. Estas CTE reflejan el comportamiento de la sociedad ya sea a los picos por COVID-19 como a las celebraciones, eventos y festividades presentes como cualquier otro año, pero ahora en el 2020 con la pandemia como telón de fondo.
 
 ```sql
-CREATE VIEW llamadas_clasificacion_mes AS (
-SELECT 
-  mes_creacion,
-  clas_con_f_alarma,
-  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY mes_creacion), 2) || ' %' AS porcentaje_llamadas
-FROM llamadas_911
-GROUP BY mes_creacion, clas_con_f_alarma
-ORDER BY mes_creacion, porcentaje_llamadas DESC
-);
+WITH llamadas_clasificacion_mes AS (
+  SELECT 
+    EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+    clas_con_falsa_alarma,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY EXTRACT(MONTH FROM fecha_creacion)), 2) || ' %' AS porcentaje_llamadas
+  FROM llamadas_911
+  GROUP BY EXTRACT(MONTH FROM fecha_creacion), clas_con_falsa_alarma
+  ORDER BY mes_creacion, porcentaje_llamadas DESC
+)
 
-CREATE VIEW llamadas_categoria_mes AS (
-SELECT 
-  mes_creacion,
-  categoria_incidente_c4,
-  ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY mes_creacion), 2) || ' %' AS porcentaje_llamadas
-FROM llamadas_911
-GROUP BY mes_creacion, categoria_incidente_c4
-ORDER BY mes_creacion, porcentaje_llamadas DESC
+SELECT *
+FROM llamadas_clasificacion_mes 
+WHERE clas_con_falsa_alarma = 'EMERGENCIA';
+---
 
-);
+WITH llamadas_categoria_mes AS (
+  SELECT 
+    EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
+    categoria_incidente,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY EXTRACT(MONTH FROM fecha_creacion)), 2) || ' %' AS porcentaje_llamadas
+  FROM llamadas_911
+  GROUP BY EXTRACT(MONTH FROM fecha_creacion), categoria_incidente
+  ORDER BY mes_creacion, porcentaje_llamadas DESC
+)
+
+SELECT *
+FROM llamadas_categoria_mes 
+WHERE categoria_incidente = 'Servicios';
 
 ```
 
 Las siguientes consultas también permiten ver la evolución de la concentración de llamadas de acuerdo a su categoría y su clasificación, diferenciando entre el primer y el segundo semestre. A nuestra sorpresa, no hay tanta variación en porcentajes hacia el segundo semestre en cuanto a temas relacionados con la salud, sin embargo, eso no significa que, en términos totales no hayan aumentado las llamadas en estos campos.
 
 ```sql
-CREATE VIEW compara_semestres_clas AS (
 SELECT 
   CASE 
     WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
     WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
   END AS semestre,
-  clas_con_f_alarma,
+  clas_con_falsa_alarma,
   ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY 
     CASE 
       WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
@@ -546,17 +541,21 @@ SELECT
     END
   ), 2) || ' %' AS porcentaje_llamadas
 FROM llamadas_911
-GROUP BY semestre, clas_con_f_alarma
-ORDER BY semestre, porcentaje_llamadas DESC);
+GROUP BY 
+  CASE 
+    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
+    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
+  END,
+  clas_con_falsa_alarma
+ORDER BY semestre, porcentaje_llamadas DESC;
+--
 
-
-CREATE VIEW compara_semestres_cate AS (
 SELECT 
   CASE 
     WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
     WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
   END AS semestre,
-  categoria_incidente_c4,
+  categoria_incidente,
   ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (PARTITION BY 
     CASE 
       WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
@@ -564,33 +563,16 @@ SELECT
     END
   ), 2) || ' %' AS porcentaje_llamadas
 FROM llamadas_911
-GROUP BY semestre, categoria_incidente_c4
-ORDER BY semestre, porcentaje_llamadas DESC);
+GROUP BY 
+  CASE 
+    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 1 AND 6 THEN 'Semestre 1'
+    WHEN EXTRACT(MONTH FROM fecha_creacion) BETWEEN 7 AND 12 THEN 'Semestre 2'
+  END,
+  categoria_incidente
+ORDER BY semestre, porcentaje_llamadas DESC;
 
 ```
-### Volumen de llamadas a travez del tiempo
 
-```sql
-CREATE OR REPLACE VIEW vista_llamadas_mensuales AS (
-SELECT 
-  EXTRACT(MONTH FROM fecha_creacion) AS mes_creacion,
-  COUNT(*) AS total_llamadas,
-  
-  SUM(CASE WHEN clas_con_falsa_alarma = 'DELITO' THEN 1 ELSE 0 END) AS llamadas_delito,
-  SUM(CASE WHEN clas_con_falsa_alarma = 'EMERGENCIA' THEN 1 ELSE 0 END) AS llamadas_emergencia,
-  SUM(CASE WHEN clas_con_falsa_alarma = 'URGENCIAS MEDICAS' THEN 1 ELSE 0 END) AS llamadas_urgencias_medicas,
-  SUM(CASE WHEN clas_con_falsa_alarma = 'SERVICIO' THEN 1 ELSE 0 END) AS llamadas_servicio,
-  
-  SUM(CASE WHEN categoria_incidente = 'Robo' THEN 1 ELSE 0 END) AS llamadas_robo,
-  SUM(CASE WHEN categoria_incidente = 'Agresion' THEN 1 ELSE 0 END) AS llamadas_agresion
-
-FROM llamadas_911
-GROUP BY mes_creacion
-ORDER BY mes_creacion);
-
-SELECT * FROM vista_llamadas_mensuales;
-
-```
 ### Cantidad y porcentaje de códigos de cierre
 
 Estas consultas muestran con qué frecuencia se registraron distintos códigos de cierre en las llamadas al 911 durante el año 2020, tanto a nivel de alcaldía como de colonia.  Estas estadísticas ayudan a identificar ciertas prioridades en función del tipo y la frecuencia de emergencias que se presentan en distintas zonas. Además, permiten observar que, en la mayoría de los casos, predominan los códigos de cierre negativos, lo que puede indicar falta de atención, cancelaciones o problemas en la respuesta a las llamadas. Esto puede ayudar a tomar mejores decisiones sobre dónde actuar y cómo distribuir los recursos.
@@ -703,49 +685,53 @@ ORDER BY
 Esta consulta te permite identificar cuáles alcaldías registraron más llamadas al 911 durante el periodo observado. Es útil para reconocer zonas de alta demanda de servicios de emergencia
 
 ```sql
-CREATE OR REPLACE VIEW vista_incidentes_reportados_alcaldia AS(
-    SELECT
-      uc.alcaldia_cierre,
-      c.categoria_incidente,
-      COUNT(*) AS total_reportes
-    FROM llamada l
-    JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-    JOIN clasificacion c ON l.clasificacion_id = c.id
-    GROUP BY uc.alcaldia_cierre, c.categoria_incidente
-    ORDER BY c.categoria_incidente, total_reportes DESC
-                                                              );
+SELECT uc.alcaldia_cierre, COUNT(*) AS total_llamadas
+FROM llamada l
+JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
+GROUP BY uc.alcaldia_cierre
+ORDER BY total_llamadas DESC;
 ```
 
-### Total de llamadas por colonia dentro de cada alcaldía ordenadas por mas llamadas
+### Total de llamadas por colonia dentro de cada alcaldía
 
 Este desglose permite identificar las colonias con más llamadas dentro de cada alcaldía. Sirve para detectar focos de atención prioritaria a nivel de calle y justificar decisiones de política pública local, como patrullajes, botones de pánico, campañas de prevención, etc.
 
 ```sql
-CREATE OR REPLACE VIEW vista_top3_colonias_por_emergencia AS (
-    WITH llamadas_ranked AS (
-      SELECT
-          clasificacion.clas_con_falsa_alarma,
-          uc.alcaldia_cierre,
-          uc.colonia_cierre,
-          COUNT(*) AS total_llamadas,
-          ROW_NUMBER() OVER (
-              PARTITION BY clasificacion.clas_con_falsa_alarma, uc.alcaldia_cierre
-              ORDER BY COUNT(*) DESC
-          ) AS rn
-      FROM llamada l
-      JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-      JOIN clasificacion ON l.clasificacion_id = clasificacion.id
-      GROUP BY clasificacion.clas_con_falsa_alarma, uc.alcaldia_cierre, uc.colonia_cierre
-    )
-    SELECT
-        clas_con_falsa_alarma,
-        alcaldia_cierre,
-        colonia_cierre,
-        total_llamadas
-    FROM llamadas_ranked
-    WHERE rn <= 3
-    ORDER BY clas_con_falsa_alarma, total_llamadas DESC
-    );
+SELECT uc.alcaldia_cierre, uc.colonia_cierre, COUNT(*) AS total_llamadas
+FROM llamada l
+JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
+GROUP BY uc.alcaldia_cierre, uc.colonia_cierre
+ORDER BY uc.alcaldia_cierre, total_llamadas DESC;
+```
+
+### Comparar número de incidentes entre alcaldías
+
+Esta consulta compara el número de incidentes reales vs. falsas alarmas por alcaldía. Te permite evaluar qué tan confiables son las llamadas en cada zona. Alcaldías con alta proporción de falsas alarmas podrían necesitar campañas de concientización o filtros de verificación.
+
+```sql
+SELECT uc.alcaldia_cierre, c.clas_con_falsa_alarma, COUNT(*) AS total_incidentes
+FROM llamada l
+JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
+JOIN clasificacion c ON l.clasificacion_id = c.id
+GROUP BY uc.alcaldia_cierre, c.clas_con_falsa_alarma
+ORDER BY c.clas_con_falsa_alarma, total_incidentes DESC;
+```
+
+## **Incidentes más reportados por alcaldía**
+
+Este análisis identifica los tipos de incidentes más frecuentes por alcaldía, permitiendo detectar patrones de riesgo específicos en cada zona. Los resultados ayudan a priorizar intervenciones focalizadas en seguridad, salud o servicios según la problemática predominante.
+
+```sql
+SELECT
+  uc.alcaldia_cierre,
+  c.incidente,                  -- tipo de incidente específico
+  c.categoria_incidente,        -- categoría general (Delitos, Emergencia, etc.)
+  COUNT(*) AS total_reportes
+FROM llamada l
+JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
+JOIN clasificacion c ON l.clasificacion_id = c.id
+GROUP BY uc.alcaldia_cierre, c.incidente, c.categoria_incidente
+ORDER BY uc.alcaldia_cierre, total_reportes DESC;
 ```
 
 ### Cantidad de llamadas a través del tiempo
@@ -769,21 +755,24 @@ Estas dos consultas permiten analizar el promedio en horas del tiempo total de r
 Primer semestre
 
 ```sql
-SELECT alcaldia_cierre, SUM(((fecha_cierre - fecha_creacion)*24 + ROUND(EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0, 2)))/COUNT(alcaldia_cierre) AS horas
-FROM llamadas_911
-WHERE fecha_creacion<'2020-6-30'
-GROUP BY alcaldia_cierre
-ORDER BY horas DESC;
+CREATE VIEW promedio_tiempo_total_respuesta_s1 AS (
+	SELECT alcaldia_cierre, ROUND(SUM(((fecha_cierre - fecha_creacion)*24 + ROUND(EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0, 2)))/COUNT(alcaldia_cierre),2) AS promedio_horas
+	FROM llamadas_911
+	WHERE fecha_creacion<'2020-6-30'
+	GROUP BY alcaldia_cierre
+ORDER BY horas DESC);
 ```
 
 Segundo semestre
 
 ```sql
-SELECT alcaldia_cierre, SUM(((fecha_cierre - fecha_creacion)*24 + ROUND(EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0, 2)))/COUNT(alcaldia_cierre) AS horas
-FROM llamadas_911
-WHERE fecha_creacion>='2020-6-30'
-GROUP BY alcaldia_cierre
-ORDER BY horas DESC;
+CREATE VIEW promedio_tiempo_total_respuesta_s2 AS (
+	SELECT alcaldia_cierre, ROUND(SUM((fecha_cierre - fecha_creacion)*24 + EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)/COUNT(alcaldia_cierre),2) AS horas
+	FROM llamadas_911
+	WHERE fecha_creacion>='2020-6-30'
+	GROUP BY alcaldia_cierre
+	ORDER BY horas DESC
+);
 ```
 
 ### Alcaldías con tiempo promedio de respuesta mayor al promedio total
@@ -806,11 +795,13 @@ tiempos_por_alcaldia AS (
     GROUP BY alcaldia_cierre
 )
 
-SELECT tpa.alcaldia_cierre, tpa.horas
-FROM tiempos_por_alcaldia tpa
-JOIN promedio_total pt ON TRUE
-WHERE tpa.horas > pt.tiempo
-ORDER BY tpa.horas DESC;Consultas para análisis superiores
+CREATE VIEW alcaldias_tiempo_respuesta_mayor_al_promedio AS (
+	SELECT tpa.alcaldia_cierre, ROUND(tpa.horas,2)
+	FROM tiempos_por_alcaldia tpa
+	JOIN promedio_total pt ON TRUE
+	WHERE tpa.horas > pt.tiempo
+	ORDER BY tpa.horas DESC
+);
 ```
 
 ### Tiempo total de respuesta por colonia
@@ -818,10 +809,12 @@ ORDER BY tpa.horas DESC;Consultas para análisis superiores
 Así como se hizo un debido análisis de las alcaldías, de igual manera se realiza para las colonias en donde se ve el tiempo total de respuesta. De igual manera para identificar distintos patrones en tiempo de atención y resolución de problemas.
 
 ```sql
-SELECT colonia_cierre, SUM(((fecha_cierre - fecha_creacion)*24 + ROUND(EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0, 2))) AS horas
-FROM llamadas_911
-GROUP BY colonia_cierre
-ORDER BY horas DESC;
+CREATE VIEW tiempo_total_de_respuesta_por_colonia AS (
+	SELECT colonia_cierre, ROUND(SUM(((fecha_cierre - fecha_creacion)*24 + ROUND(EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0, 2))),2) AS horas
+	FROM llamadas_911
+	GROUP BY colonia_cierre
+	ORDER BY horas DESC
+);
 ```
 
 ### Colonias con tiempo de respuesta por arriba del promedio
@@ -844,11 +837,13 @@ tiempos_por_colonia AS (
     GROUP BY colonia_cierre
 )
 
-SELECT tpc.colonia_cierre, tpc.horas
-FROM tiempos_por_colonia tpc
-JOIN promedio_total pt ON TRUE
-WHERE tpc.horas > pt.tiempo
-ORDER BY tpc.horas DESC;
+CREATE VIEW colonias_tiempo_respuesta_mayor_al_promedio AS (
+	SELECT tpc.colonia_cierre, ROUND(tpc.horas,2)
+	FROM tiempos_por_colonia tpc
+	JOIN promedio_total pt ON TRUE
+	WHERE tpc.horas > pt.tiempo
+	ORDER BY tpc.horas DESC
+);
 ```
 
 ### Colonias con tiempo de respuesta por debajo del promedio
@@ -871,20 +866,14 @@ tiempos_por_colonia AS (
     GROUP BY colonia_cierre
 )
 
-SELECT tpc.colonia_cierre, tpc.horas
-FROM tiempos_por_colonia tpc
-JOIN promedio_total pt ON TRUE
-WHERE tpc.horas <= pt.tiempo
-ORDER BY tpc.horas DESC;
+CREATE VIEW colonias_tiempo_respuesta_menor_al_promedio AS (
+	SELECT tpc.colonia_cierre, ROUND(tpc.horas,2)
+	FROM tiempos_por_colonia tpc
+	JOIN promedio_total pt ON TRUE
+	WHERE tpc.horas <= pt.tiempo
+	ORDER BY tpc.horas DESC
+);
 ```
-## Conclusiones
 
-A través del análisis de las emergencias reportadas al 911 durante el año 2020 en la Ciudad de México, pudimos identificar patrones que, aunque no siempre fueron tan dramáticos como inicialmente esperábamos, revelan transformaciones reales en la vida cotidiana de los capitalinos.
-
-Algunos resultados sí reflejan los picos documentados en la propagación del COVID-19, lo cual valida la sensibilidad del sistema ante eventos sanitarios masivos. Sin embargo, también encontramos fluctuaciones inesperadas que rompieron con nuestros supuestos iniciales. Esto nos obliga a mirar más allá de las narrativas dominantes y considerar otras dimensiones —sociales, económicas y territoriales— que influyeron en el comportamiento de las emergencias.
-
-Además, el hecho de que ciertas colonias concentren la mayoría de los reportes confirmados, mientras otras acumulan principalmente reportes repetidos o no verificados, no solo evidencia diferencias en la incidencia de los hechos. También señala disparidades profundas en la forma de vivir, percibir el riesgo y ser atendidos por las autoridades.
-
-Más que simples estadísticas, estos datos nos ofrecen una oportunidad para cuestionar lo que normalmente se da por hecho. Nuestro análisis busca precisamente eso: quitarse la venda de los ojos, y confrontar las desigualdades estructurales que atraviesan incluso los momentos de mayor vulnerabilidad colectiva.
 —
 
