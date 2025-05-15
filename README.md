@@ -821,4 +821,14 @@ CREATE VIEW colonias_tiempo_respuesta_menor_al_promedio AS (
 ```
 
 —
+## Conclusiones
+
+A través del análisis de las emergencias reportadas al 911 durante el año 2020 en la Ciudad de México, pudimos identificar patrones que, aunque no siempre fueron tan dramáticos como inicialmente esperábamos, revelan transformaciones reales en la vida cotidiana de los capitalinos.
+
+Algunos resultados sí reflejan los picos documentados en la propagación del COVID-19, lo cual valida la sensibilidad del sistema ante eventos sanitarios masivos. Sin embargo, también encontramos fluctuaciones inesperadas que rompieron con nuestros supuestos iniciales. Esto nos obliga a mirar más allá de las narrativas dominantes y considerar otras dimensiones —sociales, económicas y territoriales— que influyeron en el comportamiento de las emergencias.
+
+Además, el hecho de que ciertas colonias concentren la mayoría de los reportes confirmados, mientras otras acumulan principalmente reportes repetidos o no verificados, no solo evidencia diferencias en la incidencia de los hechos. También señala disparidades profundas en la forma de vivir, percibir el riesgo y ser atendidos por las autoridades.
+
+Más que simples estadísticas, estos datos nos ofrecen una oportunidad para cuestionar lo que normalmente se da por hecho. Nuestro análisis busca precisamente eso: quitarse la venda de los ojos, y confrontar las desigualdades estructurales que atraviesan incluso los momentos de mayor vulnerabilidad colectiva.
+—
 
