@@ -454,3 +454,41 @@ CREATE VIEW colonias_tiempo_respuesta_menor_al_promedio AS (
 	WHERE tpc.horas <= pt.tiempo
 	ORDER BY tpc.horas DESC
 );
+
+
+CREATE OR REPLACE VIEW vista_top3_colonias_por_emergencia AS (
+    WITH llamadas_ranked AS (
+      SELECT
+          clasificacion.clas_con_falsa_alarma,
+          uc.alcaldia_cierre,
+          uc.colonia_cierre,
+          COUNT(*) AS total_llamadas,
+          ROW_NUMBER() OVER (
+              PARTITION BY clasificacion.clas_con_falsa_alarma, uc.alcaldia_cierre
+              ORDER BY COUNT(*) DESC
+          ) AS rn
+      FROM llamada l
+      JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
+      JOIN clasificacion ON l.clasificacion_id = clasificacion.id
+      GROUP BY clasificacion.clas_con_falsa_alarma, uc.alcaldia_cierre, uc.colonia_cierre
+    )
+    SELECT
+        clas_con_falsa_alarma,
+        alcaldia_cierre,
+        colonia_cierre,
+        total_llamadas
+    FROM llamadas_ranked
+    WHERE rn <= 3
+    ORDER BY clas_con_falsa_alarma, total_llamadas DESC
+    );
+
+--Incidentes más reportados por alcaldia
+CREATE OR REPLACE VIEW vista_incidentes_reportados_alcaldia AS(
+    SELECT
+      uc.alcaldia_cierre,
+      COUNT(*) AS total_reportes
+    FROM llamada l
+    JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
+    GROUP BY uc.alcaldia_cierre
+    ORDER BY  total_reportes DESC
+);
