@@ -232,7 +232,7 @@ Todo el proceso de limpieza, normalización y creación de vistas está contenid
 Para ejecutarlo desde una consola SQL (como `psql`), basta con:
 
 ```sql
-\i script_proyecto_911.sql
+\i scriptNuevo.sql
 ```
 
 ** Este script debe ejecutarse **después de haber cargado manualmente el CSV a la tabla `llamadas_911`**. Asegúrate de que la tabla esté presente antes de iniciar.*
