@@ -242,8 +242,11 @@ Para ejecutarlo desde una consola SQL (como `psql`), basta con:
 ## 7. Diagrama Entidad-Relación (ERD)
 
 El siguiente diagrama muestra el modelo entidad-relación resultante tras la normalización de la base de datos `llamadas_911`:
+![Normalizacion (1)](https://github.com/user-attachments/assets/3827c853-8a66-40c7-8c28-424c34cfce4b)
 
-{insertar PDF} 
+![Normalizacion (2)](https://github.com/user-attachments/assets/ff1c57d2-f6bf-4f90-bfe6-1f73c4c47b48)
+
+![ERD-911-19](https://github.com/user-attachments/assets/5b49a112-cc33-4152-a8bf-7026aba01821)
 
 Este modelo cumple con la Cuarta Forma Normal (4FN), separando correctamente las dependencias funcionales y multivaluadas entre ubicaciones, clasificaciones e identificadores únicos de llamada.
 
