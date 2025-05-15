@@ -50,8 +50,8 @@ WHERE LOWER(clas_con_f_alarma) LIKE '%falsa alarma%';
 DROP TABLE IF EXISTS ubicacion_cierre CASCADE;
 CREATE TABLE ubicacion_cierre (
     id BIGSERIAL PRIMARY KEY,
-    colonia_cierre VARCHAR(150) NOT NULL,
-    alcaldia_cierre VARCHAR(100) NOT NULL,
+    colonia_cierre VARCHAR(150),
+    alcaldia_cierre VARCHAR(100),
     UNIQUE(colonia_cierre, alcaldia_cierre)
 );
 
