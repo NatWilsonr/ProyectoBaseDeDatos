@@ -47,7 +47,7 @@ términos de seguridad, tiempos de respuesta y tipos de incidentes reportados.
 ## Instalación y Uso
 1. **Clonar el repositorio**:
    ```sh
-   git clone https://github.com/tu_usuario/proyecto-911-cdmx.git
+   git clone [https://github.com/tu_usuario/proyecto-911-cdmx.git](https://github.com/NatWilsonr/ProyectoBaseDeDatos)
    cd proyecto-911-cdmx
    ```
 ---
