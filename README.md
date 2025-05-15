@@ -628,11 +628,15 @@ ORDER BY cantidad DESC
 Esta consulta te permite identificar cuáles alcaldías registraron más llamadas al 911 durante el periodo observado. Es útil para reconocer zonas de alta demanda de servicios de emergencia
 
 ```sql
-SELECT uc.alcaldia_cierre, COUNT(*) AS total_llamadas
-FROM llamada l
-JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-GROUP BY uc.alcaldia_cierre
-ORDER BY total_llamadas DESC;
+CREATE OR REPLACE VIEW vista_incidentes_reportados_alcaldia AS(
+    SELECT
+      uc.alcaldia_cierre,
+      COUNT(*) AS total_reportes
+    FROM llamada l
+    JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
+    GROUP BY uc.alcaldia_cierre
+    ORDER BY  total_reportes DESC
+                                                              );
 ```
 
 ### Total de llamadas por colonia dentro de cada alcaldía
@@ -640,42 +644,34 @@ ORDER BY total_llamadas DESC;
 Este desglose permite identificar las colonias con más llamadas dentro de cada alcaldía. Sirve para detectar focos de atención prioritaria a nivel de calle y justificar decisiones de política pública local, como patrullajes, botones de pánico, campañas de prevención, etc.
 
 ```sql
-SELECT uc.alcaldia_cierre, uc.colonia_cierre, COUNT(*) AS total_llamadas
-FROM llamada l
-JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-GROUP BY uc.alcaldia_cierre, uc.colonia_cierre
-ORDER BY uc.alcaldia_cierre, total_llamadas DESC;
+CREATE OR REPLACE VIEW vista_top3_colonias_por_emergencia AS (
+    WITH llamadas_ranked AS (
+      SELECT
+          clasificacion.clas_con_falsa_alarma,
+          uc.alcaldia_cierre,
+          uc.colonia_cierre,
+          COUNT(*) AS total_llamadas,
+          ROW_NUMBER() OVER (
+              PARTITION BY clasificacion.clas_con_falsa_alarma, uc.alcaldia_cierre
+              ORDER BY COUNT(*) DESC
+          ) AS rn
+      FROM llamada l
+      JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
+      JOIN clasificacion ON l.clasificacion_id = clasificacion.id
+      GROUP BY clasificacion.clas_con_falsa_alarma, uc.alcaldia_cierre, uc.colonia_cierre
+    )
+    SELECT
+        clas_con_falsa_alarma,
+        alcaldia_cierre,
+        colonia_cierre,
+        total_llamadas
+    FROM llamadas_ranked
+    WHERE rn <= 3
+    ORDER BY clas_con_falsa_alarma, total_llamadas DESC
+    );
 ```
 
-### Comparar número de incidentes entre alcaldías
 
-Esta consulta compara el número de incidentes reales vs. falsas alarmas por alcaldía. Te permite evaluar qué tan confiables son las llamadas en cada zona. Alcaldías con alta proporción de falsas alarmas podrían necesitar campañas de concientización o filtros de verificación.
-
-```sql
-SELECT uc.alcaldia_cierre, c.clas_con_falsa_alarma, COUNT(*) AS total_incidentes
-FROM llamada l
-JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-JOIN clasificacion c ON l.clasificacion_id = c.id
-GROUP BY uc.alcaldia_cierre, c.clas_con_falsa_alarma
-ORDER BY c.clas_con_falsa_alarma, total_incidentes DESC;
-```
-
-## **Incidentes más reportados por alcaldía**
-
-Este análisis identifica los tipos de incidentes más frecuentes por alcaldía, permitiendo detectar patrones de riesgo específicos en cada zona. Los resultados ayudan a priorizar intervenciones focalizadas en seguridad, salud o servicios según la problemática predominante.
-
-```sql
-SELECT
-  uc.alcaldia_cierre,
-  c.incidente,                  -- tipo de incidente específico
-  c.categoria_incidente,        -- categoría general (Delitos, Emergencia, etc.)
-  COUNT(*) AS total_reportes
-FROM llamada l
-JOIN ubicacion_cierre uc ON l.ubicacion_cierre_id = uc.id
-JOIN clasificacion c ON l.clasificacion_id = c.id
-GROUP BY uc.alcaldia_cierre, c.incidente, c.categoria_incidente
-ORDER BY uc.alcaldia_cierre, total_reportes DESC;
-```
 
 ### Cantidad de llamadas a través del tiempo
 
