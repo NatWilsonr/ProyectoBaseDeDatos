@@ -703,7 +703,7 @@ CREATE VIEW promedio_tiempo_total_respuesta_s1 AS (
 	FROM llamadas_911
 	WHERE fecha_creacion<'2020-6-30'
 	GROUP BY alcaldia_cierre
-ORDER BY horas DESC);
+ORDER BY promedio_horas DESC);
 ```
 
 Segundo semestre
@@ -723,22 +723,23 @@ CREATE VIEW promedio_tiempo_total_respuesta_s2 AS (
 Una vez que revisamos cuál es el promedio por alcaldía, es de interés conocer aquellas en donde el promedio de dicha alcaldía es mayor al promedio en general de respuesta de todas las alcaldías en todo el año. Para ver qué alcaldías están siendo más tardadas en ser atendidas en promedio. Para esto, se ejecuta la siguiente consulta
 
 ```sql
-WITH promedio_total AS (
-    SELECT 
-        SUM(((fecha_cierre - fecha_creacion) * 24 + 
-             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS tiempo
-    FROM llamadas_911
-),
-tiempos_por_alcaldia AS (
-    SELECT 
-        alcaldia_cierre, 
-        SUM(((fecha_cierre - fecha_creacion) * 24 + 
-             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS horas
-    FROM llamadas_911
-    GROUP BY alcaldia_cierre
-)
 
 CREATE VIEW alcaldias_tiempo_respuesta_mayor_al_promedio AS (
+	WITH promedio_total AS (
+	    SELECT 
+	        SUM(((fecha_cierre - fecha_creacion) * 24 + 
+	             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS tiempo
+	    FROM llamadas_911
+	),
+	tiempos_por_alcaldia AS (
+	    SELECT 
+	        alcaldia_cierre, 
+	        SUM(((fecha_cierre - fecha_creacion) * 24 + 
+	             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS horas
+	    FROM llamadas_911
+	    GROUP BY alcaldia_cierre
+	)
+
 	SELECT tpa.alcaldia_cierre, ROUND(tpa.horas,2)
 	FROM tiempos_por_alcaldia tpa
 	JOIN promedio_total pt ON TRUE
@@ -765,22 +766,22 @@ CREATE VIEW tiempo_total_de_respuesta_por_colonia AS (
 Se discrimina en esta consulta a las colonias con mayor tiempo de respuesta con respecto al promedio para identificar zonas de interés para mejorar el servicio de atención. E igual se calcula su variación de tiempo para determinar qué tan alejado está del promedio.
 
 ```sql
-WITH promedio_total AS (
-    SELECT 
-        SUM(((fecha_cierre - fecha_creacion) * 24 + 
-             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS tiempo
-    FROM llamadas_911
-),
-tiempos_por_colonia AS (
-    SELECT 
-        colonia_cierre, 
-        SUM(((fecha_cierre - fecha_creacion) * 24 + 
-             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS horas
-    FROM llamadas_911
-    GROUP BY colonia_cierre
-)
-
 CREATE VIEW colonias_tiempo_respuesta_mayor_al_promedio AS (
+	WITH promedio_total AS (
+	    SELECT 
+	        SUM(((fecha_cierre - fecha_creacion) * 24 + 
+	             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS tiempo
+	    FROM llamadas_911
+	),
+	tiempos_por_colonia AS (
+	    SELECT 
+	        colonia_cierre, 
+	        SUM(((fecha_cierre - fecha_creacion) * 24 + 
+	             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS horas
+	    FROM llamadas_911
+	    GROUP BY colonia_cierre
+	)
+
 	SELECT tpc.colonia_cierre, ROUND(tpc.horas,2)
 	FROM tiempos_por_colonia tpc
 	JOIN promedio_total pt ON TRUE
@@ -794,22 +795,23 @@ CREATE VIEW colonias_tiempo_respuesta_mayor_al_promedio AS (
 Al igual que el análisis de las colonias con un tiempo de espera superior al promedio se realiza el estudio pertinente para aquellas colonias con menor tiempo de respuesta. A pesar de que el tiempo sea menor, también hace falta ver las condiciones favorables o no de la resolución de la llamada.
 
 ```sql
-WITH promedio_total AS (
-    SELECT 
-        SUM(((fecha_cierre - fecha_creacion) * 24 + 
-             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS tiempo
-    FROM llamadas_911
-),
-tiempos_por_colonia AS (
-    SELECT 
-        colonia_cierre, 
-        SUM(((fecha_cierre - fecha_creacion) * 24 + 
-             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS horas
-    FROM llamadas_911
-    GROUP BY colonia_cierre
-)
 
 CREATE VIEW colonias_tiempo_respuesta_menor_al_promedio AS (
+	WITH promedio_total AS (
+	    SELECT 
+	        SUM(((fecha_cierre - fecha_creacion) * 24 + 
+	             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS tiempo
+	    FROM llamadas_911
+	),
+	tiempos_por_colonia AS (
+	    SELECT 
+	        colonia_cierre, 
+	        SUM(((fecha_cierre - fecha_creacion) * 24 + 
+	             EXTRACT(EPOCH FROM (hora_cierre - hora_creacion)) / 3600.0)) / COUNT(*) AS horas
+	    FROM llamadas_911
+	    GROUP BY colonia_cierre
+	)
+
 	SELECT tpc.colonia_cierre, ROUND(tpc.horas,2)
 	FROM tiempos_por_colonia tpc
 	JOIN promedio_total pt ON TRUE
